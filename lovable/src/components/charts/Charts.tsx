@@ -87,7 +87,7 @@ export function BaselineChart({ agent, height = 180 }: { agent: Agent; height?: 
       aria-label="Historical outbound training samples in UTC; dashed line is the detector median"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: -8 }}>
+        <BarChart data={data} margin={{ top: 8, right: 24, bottom: 0, left: -8 }}>
           <CartesianGrid vertical={false} stroke="var(--color-border)" />
           <XAxis
             dataKey="day"
@@ -114,7 +114,7 @@ export function BaselineChart({ agent, height = 180 }: { agent: Agent; height?: 
             y={baselineDaily}
             stroke="var(--color-ink)"
             strokeDasharray="4 3"
-            label={{ value: "median / active window", position: "insideTopLeft", ...axis }}
+            label={{ value: "median", position: "insideTopLeft", ...axis }}
           />
           <Bar
             dataKey="sent"

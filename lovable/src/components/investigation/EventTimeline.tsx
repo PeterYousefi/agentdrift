@@ -50,10 +50,13 @@ export function EventTimeline({
                 </span>
                 <span className="flex min-w-0 items-center gap-2">
                   <OpTag op={e.operation} anomalous={e.novel} />
-                  <span className="truncate text-[12.5px] text-foreground">
-                    {ENTITIES[e.target]?.label ?? e.target}
+                  <span title={e.target} className="truncate text-[12.5px] text-foreground">
+                    {ENTITIES[e.target]?.label ?? e.target.split(":").at(-1)?.replaceAll("-", " ")}
                   </span>
-                  <span className="hidden font-mono text-[10.5px] text-muted-foreground lg:inline">
+                  <span
+                    title={e.id}
+                    className="hidden max-w-24 truncate font-mono text-[10.5px] text-muted-foreground 2xl:inline"
+                  >
                     {e.id}
                   </span>
                 </span>
