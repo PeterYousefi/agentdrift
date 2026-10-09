@@ -8,13 +8,26 @@ export function fmtBytes(b: number, digits = 1): string {
   return `${b} B`;
 }
 
+function utcIso(value: string): string | null {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
 export function fmtTime(iso: string): string {
-  return iso.slice(11, 19);
+  return utcIso(iso)?.slice(11, 19) ?? "—";
 }
 
 export function fmtDateTime(iso: string): string {
-  const d = iso.slice(5, 10).replace("-", "/");
-  return `${d} ${iso.slice(11, 16)}`;
+  const value = utcIso(iso);
+  return value ? `${value.slice(0, 10)} ${value.slice(11, 19)} UTC` : "—";
+}
+
+export function baselinePeriod(history: { day: string }[]): string {
+  if (!history.length) return "No training samples";
+  const dates = history.map((row) => Date.parse(row.day)).filter(Number.isFinite);
+  if (!dates.length) return "No valid training timestamps";
+  const minutes = Math.round((Math.max(...dates) - Math.min(...dates)) / 60000);
+  return `${history.length} training samples · ${Math.floor(minutes / 60)}h ${minutes % 60}m span · UTC`;
 }
 
 export function fmtScore(s: number): string {

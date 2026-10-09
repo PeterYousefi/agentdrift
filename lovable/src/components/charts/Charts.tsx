@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import type { Agent } from "@/types";
-import { fmtBytes } from "@/lib/format";
+import { fmtBytes, fmtDateTime, fmtTime } from "@/lib/format";
 
 const axis = {
   fontSize: 10,
@@ -78,14 +78,26 @@ function TipBox({
 }
 
 export function BaselineChart({ agent, height = 180 }: { agent: Agent; height?: number }) {
-  const baselineDaily = agent.history.slice(0, 10).reduce((s, d) => s + d.sent, 0) / 10;
-  const data = agent.history.map((d) => ({ day: d.day.slice(5), sent: d.sent }));
+  const baselineDaily = agent.baseline.avgSendBytes;
+  const data = agent.history.map((d) => ({ day: d.day, sent: d.sent }));
   return (
-    <div style={{ height }}>
+    <div
+      style={{ height }}
+      role="img"
+      aria-label="Historical outbound training samples in UTC; dashed line is the detector median"
+    >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: -8 }}>
           <CartesianGrid vertical={false} stroke="var(--color-border)" />
-          <XAxis dataKey="day" tick={axis} tickLine={false} axisLine={false} interval={1} />
+          <XAxis
+            dataKey="day"
+            tick={axis}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={fmtTime}
+            minTickGap={40}
+            interval="preserveStartEnd"
+          />
           <YAxis
             tick={axis}
             tickLine={false}
@@ -93,12 +105,16 @@ export function BaselineChart({ agent, height = 180 }: { agent: Agent; height?: 
             tickFormatter={(v) => fmtBytes(v, 0)}
             width={58}
           />
-          <Tooltip content={<TipBox />} cursor={{ fill: "var(--color-muted)" }} />
+          <Tooltip
+            content={<TipBox />}
+            labelFormatter={(label) => fmtDateTime(String(label))}
+            cursor={{ fill: "var(--color-muted)" }}
+          />
           <ReferenceLine
             y={baselineDaily}
             stroke="var(--color-ink)"
             strokeDasharray="4 3"
-            label={{ value: "baseline", position: "insideTopLeft", ...axis }}
+            label={{ value: "median / active window", position: "insideTopLeft", ...axis }}
           />
           <Bar
             dataKey="sent"

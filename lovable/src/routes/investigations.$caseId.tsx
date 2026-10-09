@@ -8,7 +8,7 @@ import { useDemo } from "@/lib/demo-store";
 import { AGENT_BY_ID } from "@/fixtures/agents";
 import { ACTION_BY_ID, INVESTIGATION_BY_ID, INVESTIGATIONS } from "@/fixtures/investigations";
 import { ENTITIES } from "@/fixtures/entities";
-import { fmtBytes, fmtDateTime } from "@/lib/format";
+import { baselinePeriod, fmtBytes, fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -343,7 +343,7 @@ function Workspace() {
 
           <Panel
             eyebrow="Baseline comparison"
-            title={`${agent.name} · daily outbound, 14 days`}
+            title={`${agent.name} · ${baselinePeriod(agent.history)}`}
             actions={<ProvenanceLabel kind="demo" />}
           >
             <div className="grid gap-5 lg:grid-cols-[1fr_260px]">

@@ -5,7 +5,7 @@ import { pageMeta } from "@/lib/seo";
 import { AGENT_BY_ID } from "@/fixtures/agents";
 import { ENTITIES } from "@/fixtures/entities";
 import { INVESTIGATION_BY_ID } from "@/fixtures/investigations";
-import { fmtBytes, fmtDateTime } from "@/lib/format";
+import { baselinePeriod, fmtBytes, fmtDateTime } from "@/lib/format";
 import {
   Metric,
   Mono,
@@ -85,7 +85,11 @@ function AgentProfile() {
         />
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <Panel id="baseline" eyebrow="Historical baseline" title="Daily outbound volume · 14 days">
+        <Panel
+          id="baseline"
+          eyebrow="Historical baseline"
+          title={`Outbound volume · ${baselinePeriod(a.history)}`}
+        >
           <BaselineChart agent={a} height={240} />
           <p className="mt-2 text-[11.5px] text-muted-foreground">
             Dashed line is the mean of the first 10 days. Amber &gt;1.3×, vermilion &gt;1.8×.
