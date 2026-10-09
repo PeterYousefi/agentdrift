@@ -29,8 +29,10 @@ test("persisted scenario evidence report and human-approved simulation", async (
   );
   await page.getByRole("tab", { name: "AI report", exact: true }).click();
   await expect(page.locator(".react-flow__node").first()).toBeVisible();
-  if (process.env.CAPTURE_DEMO === "true")
-    await page.screenshot({ path: "../docs/assets/investigation.png", fullPage: true });
+  if (process.env.CAPTURE_DEMO === "true") {
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: "../docs/assets/investigation.png", fullPage: false });
+  }
   await page.locator(".react-flow__node").first().click();
   await page
     .getByRole("tab", { name: /containment/i })
