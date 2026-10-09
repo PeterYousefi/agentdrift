@@ -1,6 +1,6 @@
 # Current limitations
 
-Azure deployment and live verification are pending user cost approval. No public Azure demo URL is claimed. The frontend, backend, tests, image publishing, CI and Bicep are implemented and verified locally/through GitHub.
+The frontend and backend are deployed on Azure. The public Chromium workflow passed, including refresh, real evidence/report/containment and zero page errors. Azure OpenAI remains unconfigured and reports use the labeled deterministic fallback. Azure OIDC deployment remains gated.
 
 The public demo exposes one research agent. Core detector tests cover multiple agents; a real telemetry integration is absent. Inputs and baseline structure are synthetic. Held-out seeds share scenario shape; recall cannot establish real-world effectiveness. Benign endpoint novelty triggers review; false-positive rate is 50% on this benchmark.
 

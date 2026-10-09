@@ -13,7 +13,9 @@ Only checked items have been executed and verified. Each increment is committed 
 - [x] Human-approved simulated containment and audit
 - [x] Integrate existing Lovable pages and live playback
 - [x] Azure cost review and compiled Bicep; subscription $5 email budget created and verified
-- [ ] Cost approval and application provisioning
+- [x] Cost approval and application provisioning
 - [x] GitHub CI and local browser tests
-- [ ] Azure deployment and public live verification
+- [x] Azure deployment and public browser workflow verification
 - [x] Documentation, executed synthetic measurements and demo walkthrough
+
+Explicit scope limits: Azure OpenAI adapter is implemented/tested but no model is provisioned; deterministic fallback is live. GitHub validation/image publishing are active; Azure deployment runs through CLI and the OIDC workflow remains gated. No optional ML detector or Event Hubs is claimed.
