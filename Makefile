@@ -4,7 +4,7 @@ setup:
 	backend/.venv/bin/pip install -e './backend[test]'
 	cd lovable && npm ci
 api:
-	backend/.venv/bin/uvicorn app.main:app --reload --port 8000
+	backend/.venv/bin/uvicorn app.main:app --app-dir backend --reload --port 8000
 web:
 	cd lovable && npm run dev -- --port 3000
 test:
@@ -12,4 +12,4 @@ test:
 	backend/.venv/bin/ruff check backend/app backend/tests
 	cd lovable && npm test && npm run lint && npx tsc --noEmit
 evaluate:
-	backend/.venv/bin/python -m app.evaluation
+	cd backend && .venv/bin/python -m app.evaluation
