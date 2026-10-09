@@ -1,0 +1,28 @@
+name: Deploy approved Azure environment
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  deploy:
+    if: vars.AZURE_DEPLOYMENT_ENABLED == 'true'
+    environment: azure-demo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: npm ci
+        working-directory: lovable
+      - run: npx playwright install --with-deps chromium
+        working-directory: lovable
+      - run: bash scripts/deploy.sh
+        env:
+          ALLOW_AZURE_DEPLOY: 'true'
