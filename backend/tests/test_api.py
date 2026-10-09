@@ -58,3 +58,27 @@ def test_payload_and_ingestion_controls(tmp_path):
             == 422
         )
         assert client.post("/api/v1/sessions", content="x" * 65537).status_code == 413
+
+
+def test_rejection_audit_isolation_and_restart(tmp_path):
+    path = str(tmp_path / "durable.sqlite")
+    with TestClient(create_app(SQLiteStore(path))) as client:
+        a = {"X-Demo-Session": client.post("/api/v1/sessions").json()["token"]}
+        b = {"X-Demo-Session": client.post("/api/v1/sessions").json()["token"]}
+        run = client.post("/api/v1/scenarios/read-then-send/runs", headers=a, json={"rate": 1000}).json()
+        time.sleep(0.03)
+        state = client.get(f"/api/v1/scenario-runs/{run['runId']}", headers=a).json()
+        case_id = state["caseId"]
+        events = client.get(f"/api/v1/investigations/{case_id}/evidence", headers=a).json()
+        action = client.post(f"/api/v1/investigations/{case_id}/containment", headers=a).json()
+        rejected = client.post(f"/api/v1/containment/{action['id']}/reject", headers=a, json={}).json()
+        assert rejected["status"] == "rejected"
+        assert [row["decision"] for row in rejected["audit"]] == ["proposed", "rejected"]
+        assert client.get(f"/api/v1/investigations/{case_id}", headers=a).json()["status"] == "open"
+        assert (
+            client.post(f"/api/v1/containment/{action['id']}/approve", headers=a, json={}).status_code == 409
+        )
+        assert client.get(f"/api/v1/scenario-runs/{run['runId']}", headers=b).status_code == 404
+    with TestClient(create_app(SQLiteStore(path))) as client:
+        assert client.get(f"/api/v1/investigations/{case_id}/evidence", headers=a).json() == events
+        assert client.get(f"/api/v1/investigations/{case_id}", headers=b).status_code == 404

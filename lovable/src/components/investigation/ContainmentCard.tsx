@@ -25,8 +25,17 @@ export function ContainmentCard({
   compact?: boolean;
 }) {
   const demoStatus = useDemo((s) => s.actionStatus[action.id] ?? "proposed");
-  const [liveStatus, setLiveStatus] = useState(action.status);
-  const status = isDemoMode ? demoStatus : liveStatus;
+  const [decision, setDecision] = useState<{
+    id: string;
+    status: ContainmentAction["status"];
+  } | null>(null);
+  const status = isDemoMode
+    ? demoStatus
+    : action.status !== "proposed"
+      ? action.status
+      : decision?.id === action.id
+        ? decision.status
+        : action.status;
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const queryClient = useQueryClient();
@@ -36,7 +45,7 @@ export function ContainmentCard({
     try {
       if (approved) await api.approveContainment(action.id, note);
       else await api.rejectContainment(action.id, note);
-      setLiveStatus(approved ? "approved" : "rejected");
+      setDecision({ id: action.id, status: approved ? "approved" : "rejected" });
       await queryClient.invalidateQueries();
     } catch (err) {
       setError((err as Error).message);
@@ -114,6 +123,7 @@ export function ContainmentCard({
             <span className="eyebrow">Analyst note (optional)</span>
             <input
               value={note}
+              disabled={pending}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Reason for decision"
               className="mt-1 h-8 w-full rounded-sm border border-border bg-card px-2 text-[12.5px] outline-none focus:border-primary"
