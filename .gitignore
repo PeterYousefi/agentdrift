@@ -15,3 +15,5 @@ dist/
 coverage/
 test-results/
 playwright-report/
+*.egg-info/
+.wrangler/
