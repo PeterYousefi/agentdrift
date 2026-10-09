@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
+  ClientOnly,
   Link,
   createRootRouteWithContext,
   useRouter,
@@ -129,9 +130,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell>
-        <Outlet />
-      </AppShell>
+      <ClientOnly fallback={<div className="p-6 text-sm">Loading AgentDrift personal demo…</div>}>
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      </ClientOnly>
     </QueryClientProvider>
   );
 }
