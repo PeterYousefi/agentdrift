@@ -12,8 +12,8 @@ import { fmtBytes } from "@/lib/format";
 import { TrendArea } from "@/components/charts/Charts";
 
 export function LiveOverview() {
-  const overview = useQuery({ ...q.overview(), refetchInterval: 2000 });
-  const investigations = useQuery({ ...q.investigations(), refetchInterval: 2000 });
+  const overview = useQuery({ ...q.overview(), refetchInterval: false });
+  const investigations = useQuery({ ...q.investigations(), refetchInterval: false });
   const error = overview.error ?? investigations.error;
   return (
     <div className="mx-auto max-w-[1360px]">

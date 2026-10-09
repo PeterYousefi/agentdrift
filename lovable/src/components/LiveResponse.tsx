@@ -15,7 +15,7 @@ export function LiveResponse() {
   const actions = useQuery({
     queryKey: ["actions"],
     queryFn: () => liveRequest<Action[]>("/containment"),
-    refetchInterval: 2000,
+    refetchInterval: false,
   });
   return (
     <div className="mx-auto max-w-[1360px]">

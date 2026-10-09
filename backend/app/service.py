@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from app.detection import build_baseline, detect
 from app.evidence import graph, ui_event
-from app.models import MovementEvent
+from app.models import MovementEvent, utcnow
 from app.scenarios import AGENT, CATALOG, generate, historical_events
 
 
@@ -51,6 +51,7 @@ class Service:
     def ingest(self, session, run_id, events):
         run = self.run(session, run_id)
         accepted = 0
+        processing_start = time.perf_counter()
         for event in events:
             if event.scenario_run_id != run_id:
                 raise ValueError("event does not belong to run")
@@ -62,11 +63,15 @@ class Service:
                 if old.model_dump(exclude={"ingest_time"}) != event.model_dump(exclude={"ingest_time"}):
                     raise ValueError("conflicting duplicate event ID")
                 continue
-            self.store.put(session, key, event.model_dump(mode="json"))
+            stored_event = event.model_copy(update={"ingest_time": utcnow()})
+            self.store.put(session, key, stored_event.model_dump(mode="json"))
             accepted += 1
         evidence = self.events(session, run_id)
         finding = detect(evidence, self.baseline)
         if finding:
+            finding.feature_values["pipeline_processing_ms"] = round(
+                (time.perf_counter() - processing_start) * 1000, 3
+            )
             self.store.put(session, f"finding-{run_id}", finding.model_dump(mode="json"))
             if finding.anomaly_score >= 30:
                 case_id = f"case-{run_id[4:]}"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Play, Pause, RotateCcw } from "lucide-react";
@@ -37,14 +37,17 @@ export function LivePlayground() {
     queryKey: ["run", runId],
     enabled: !!runId,
     queryFn: () => liveRequest<Run>(`/scenario-runs/${runId}`),
-    refetchInterval: 500,
+    refetchInterval: (query) => (query.state.data?.status === "running" ? 1000 : false),
   });
   const events = useQuery({
     queryKey: ["run-events", runId],
     enabled: !!runId,
     queryFn: () => api.getScenarioEvents(runId!),
-    refetchInterval: 500,
+    refetchInterval: run.data?.status === "running" ? 1000 : false,
   });
+  useEffect(() => {
+    if (run.data?.eventCount) void client.invalidateQueries({ queryKey: ["run-events", runId] });
+  }, [run.data?.eventCount, runId, client]);
   const mutation = useMutation({
     mutationFn: async (operation: string) =>
       operation === "start"
