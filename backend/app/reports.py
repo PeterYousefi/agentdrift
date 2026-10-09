@@ -216,7 +216,20 @@ def generate_report(
                         k: int(getattr(usage, k, 0) or 0)
                         for k in ["prompt_tokens", "completion_tokens", "total_tokens"]
                     }
-                return validate_report(report, case["id"], evidence)
+                validated = validate_report(report, case["id"], evidence)
+                logger.info(
+                    json.dumps(
+                        {
+                            "event": "analysis_complete",
+                            "provider": "azure-openai",
+                            "correlation_id": correlation_id,
+                            "generation_ms": report.generation_ms,
+                            "prompt_version": PROMPT_VERSION,
+                            "token_usage": report.token_usage,
+                        }
+                    )
+                )
+                return validated
             except Exception as exc:
                 status = getattr(exc, "status_code", None)
                 reason = "validation_failed" if isinstance(exc, ValueError) else "provider_unavailable"
@@ -234,7 +247,9 @@ def generate_report(
             reason = "evidence_invalid_or_excessive"
         else:
             reason = "provider_unavailable"
-    logger.warning("report_fallback", extra={"reason": reason, "correlation_id": correlation_id})
+    logger.warning(
+        json.dumps({"event": "report_fallback", "reason": reason, "correlation_id": correlation_id})
+    )
     report = fallback(case, evidence, finding)
     report.evidence_fingerprint = fingerprint
     report.request_correlation_id = correlation_id
