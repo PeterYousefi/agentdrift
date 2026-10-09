@@ -81,7 +81,7 @@ function About() {
           </div>
           <div className="rounded-sm border border-border p-3">
             <div className="eyebrow">Analysis</div>Detector in backend · Azure OpenAI called
-            server-side when configured; labeled fallback otherwise
+            server-side only when enabled; hosted demo currently uses labeled deterministic fallback
           </div>
         </div>
       </Panel>
@@ -95,9 +95,10 @@ function About() {
         </Panel>
         <Panel eyebrow="Separation" title="Detection vs GenAI">
           <p className="text-[13px] leading-relaxed">
-            Scores come from the detector alone. GenAI only explains, never decides, and every
-            factual claim must cite an evidence ID. Labels in the UI distinguish observed evidence,
-            detector output, GenAI interpretation and human decisions.
+            Scores come from the detector alone. Explicit analysis uses bounded evidence and
+            persistent attempt quotas. GenAI only explains, never decides, and every factual claim
+            must cite an evidence ID. Labels in the UI distinguish observed evidence, detector
+            output, GenAI interpretation and human decisions.
           </p>
         </Panel>
         <Panel eyebrow="Provenance" title="Evidence chain">

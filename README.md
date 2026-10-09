@@ -10,7 +10,7 @@ AI-agent metadata movement investigation with Python behavioral detection, linke
 
 ![Actual local investigation screenshot](docs/assets/investigation.png)
 
-The existing Lovable UI is preserved: React 19, TanStack Start/Router/Query, React Flow, Tailwind and Radix. FastAPI/Pydantic provides six deterministic scenarios, historical baselines, robust volume/novelty rules, temporal correlation, persisted cases, citation-validated reports and audited simulation. SQLite supports local development; The live deployment uses Azure Table Storage with managed identity. Azure OpenAI is optional; fallback reports explicitly say no LLM inference was used.
+The existing Lovable UI is preserved: React 19, TanStack Start/Router/Query, React Flow, Tailwind and Radix. FastAPI/Pydantic provides six deterministic scenarios, historical baselines, robust volume/novelty rules, temporal correlation, persisted cases, citation-validated reports and audited simulation. SQLite supports local development; The live deployment uses Azure Table Storage with managed identity. Azure OpenAI is implemented server-side with strict event-tuple validation, persistent attempt quotas and explicit generation controls. **The hosted demo uses deterministic fallback; no live model invocation has been verified.** The owner opted for no new model costs. See [the upgrade audit](docs/genai-upgrade-audit.md) and [grounding design](docs/llm-grounding.md).
 
 **Live demo:** [AgentDrift personal demo](https://agentdrift-personal-demo.azurewebsites.net) · [API health](https://agentdrift-api.icydune-d7187e3c.canadacentral.azurecontainerapps.io/health). The public Chromium workflow passed, including deep-link refresh and zero page errors. [Repository](https://github.com/PeterYousefi/agentdrift) · [Architecture](docs/architecture.md) · [Deployment and preflight price detail](docs/azure-deployment.md).
 
@@ -40,9 +40,9 @@ Container: `docker build -t agentdrift backend`. Production configuration requir
 
 ## Executed verification
 
-39 pytest tests, 18 frontend Vitest tests and three Chromium/API end-to-end workflows pass locally. Frontend build, TypeScript and lint pass; lint retains seven existing fast-refresh warnings. GitHub validation ran backend, Docker, frontend and browser jobs successfully. The image is available from public GHCR; Azure deployment workflow remains gated.
+68 pytest tests pass, with one opt-in live-model test skipped; 21 frontend Vitest tests and four Chromium/API end-to-end workflows pass locally. Frontend build, TypeScript and lint pass; lint retains seven existing fast-refresh warnings. GitHub validation ran backend, Docker, frontend and browser jobs successfully. The image is available from public GHCR; Azure deployment workflow remains gated.
 
-120 executed held-out synthetic runs: precision 1.00, recall 1.00, F1 1.00, false-positive rate 0.00 (80 TP, 0 FP, 40 TN, 0 FN) after explicit approved-endpoint policy; reproduced prior FPR was 0.50. [Machine-readable results](backend/evaluation.json) and [evaluation methodology](docs/evaluation.md) explain the limits. Synthetic metrics do not establish effectiveness on real agent telemetry.
+The frozen **260-run challenge** measures precision 0.50, recall 0.80, F1 0.6154 and false-positive rate 0.50 (80 TP, 80 FP, 80 TN, 20 FN). Detection Lab shows these weaker results by default, with trivial baselines and threshold sensitivity. The tuned core regression has 120 executed synthetic runs: precision 1.00, recall 1.00, F1 1.00, false-positive rate 0.00 (80 TP, 0 FP, 40 TN, 0 FN) after explicit approved-endpoint policy; reproduced prior FPR was 0.50. [Machine-readable results](backend/evaluation.json) and [evaluation methodology](docs/evaluation.md) explain the limits. Synthetic metrics do not establish effectiveness on real agent telemetry.
 
 Scenarios: normal research, volume spike, novel endpoint, sensitive read → stage → send, low-and-slow drift and benign unusual reporting. The same run has stable event IDs; fresh replay runs isolate evidence and policy state. See the [three-minute script](docs/demo-script.md).
 

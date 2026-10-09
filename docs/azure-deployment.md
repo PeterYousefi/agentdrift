@@ -49,3 +49,9 @@ Persistence verification: the earlier explicit restart request returned Azure In
 ## Updating existing resources
 
 For validated releases use `ALLOW_AZURE_DEPLOY=true UPDATE_EXISTING_ONLY=true AGENTDRIFT_IMAGE=ghcr.io/peteryousefi/agentdrift:<tested-image-commit-sha> bash scripts/deploy.sh`. This path verifies both apps exist, updates the backend image, builds and ZIP-deploys the frontend, checks health/readiness and runs public Playwright tests. It does not provision or resize resources. The manual GitHub OIDC workflow requires an explicit immutable image tag and remains gated until OIDC variables are configured. Validation and GHCR image publishing are active.
+
+## October 2026 report upgrade
+
+The owner selected hosted fallback with no new model costs. Azure OpenAI remains unconfigured; no AI resource, deployment, paid registry, larger CPU/storage allocation or additional cloud application was provisioned. Existing-resource updates use `UPDATE_EXISTING_ONLY=true` and an immutable tested GHCR SHA. The deployment script verifies health/readiness and runs the public browser suite. Existing budget notifications are alerts, not automatic shutdown.
+
+Future model enablement requires separate approval, confirmed model quota/pricing, server runtime configuration and managed-identity authorization. Monthly/day/session provider attempt caps count retries and failures. Model pricing was not established for an approved deployment, so no dollar claim for live model usage is made.
