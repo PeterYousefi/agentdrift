@@ -72,7 +72,7 @@ def create_app(store=None):
     app = FastAPI(title="AgentDrift", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173").split(","),
+        allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000").split(","),
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Content-Type", "X-Demo-Session", "Last-Event-ID"],
         expose_headers=["X-Request-ID"],
@@ -384,6 +384,15 @@ def create_app(store=None):
             "movementTrend": [{"t": str(i), "bytes": e["bytes"]} for i, e in enumerate(events)],
             "featuredCaseId": max(cases_, key=lambda c: c["score"])["id"] if cases_ else "",
         }
+
+    @app.get("/api/v1/detection/evaluation")
+    def evaluation(sid=Depends(session)):
+        from pathlib import Path
+
+        path = Path(__file__).parent.parent / "evaluation.json"
+        if not path.exists():
+            raise HTTPException(503, "Evaluation has not been executed")
+        return json.loads(path.read_text())
 
     return app
 

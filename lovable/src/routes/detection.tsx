@@ -1,3 +1,5 @@
+import { isDemoMode } from "@/api";
+import { LiveDetection } from "@/components/LiveDetection";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
@@ -37,7 +39,7 @@ export const Route = createFileRoute("/detection")({
       "Detection lab",
       "How the behavioral detector scores AI-agent movement: features, baselines, sliding windows and thresholds.",
     ),
-  component: Lab,
+  component: () => (isDemoMode ? <Lab /> : <LiveDetection />),
 });
 
 const axis = {
