@@ -1,3 +1,5 @@
+import { isDemoMode } from "@/api";
+import { LiveResponse } from "@/components/LiveResponse";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { pageMeta } from "@/lib/seo";
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/response")({
       "Response center",
       "Human-approval workflow for simulated containment, with policy checks and a local audit trail.",
     ),
-  component: Response,
+  component: () => (isDemoMode ? <Response /> : <LiveResponse />),
 });
 
 function Response() {

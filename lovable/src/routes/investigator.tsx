@@ -1,3 +1,5 @@
+import { isDemoMode } from "@/api";
+import { LiveInvestigator } from "@/components/LiveResponse";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { pageMeta } from "@/lib/seo";
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/investigator")({
       "AI investigator",
       "An evidence notebook separating observed facts from AI-generated inferences, with every claim citing synthetic event IDs.",
     ),
-  component: Investigator,
+  component: () => (isDemoMode ? <Investigator /> : <LiveInvestigator />),
 });
 
 function Investigator() {

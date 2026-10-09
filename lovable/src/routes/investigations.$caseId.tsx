@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Crosshair, Maximize2, Network, ListOrdered } from "lucide-react";
-import { q } from "@/api";
+import { q, api, isDemoMode } from "@/api";
 import { pageMeta } from "@/lib/seo";
 import { useDemo } from "@/lib/demo-store";
 import { AGENT_BY_ID } from "@/fixtures/agents";
@@ -37,13 +37,15 @@ export const Route = createFileRoute("/investigations/$caseId")({
       : { meta: [{ title: "Unavailable — AgentDrift" }, { name: "robots", content: "noindex" }] };
   },
   loader: async ({ context, params }) => {
-    if (!INVESTIGATION_BY_ID[params.caseId]) throw notFound();
+    if (isDemoMode && !INVESTIGATION_BY_ID[params.caseId]) throw notFound();
     await Promise.all([
       context.queryClient.ensureQueryData(q.investigation(params.caseId)),
       context.queryClient.ensureQueryData(q.evidence(params.caseId)),
       context.queryClient.ensureQueryData(q.graph(params.caseId)),
       context.queryClient.ensureQueryData(q.features(params.caseId)),
       context.queryClient.ensureQueryData(q.narrative(params.caseId)),
+      context.queryClient.ensureQueryData(q.agents()),
+      context.queryClient.ensureQueryData(q.investigations()),
     ]);
   },
   component: Workspace,
@@ -58,8 +60,14 @@ function Workspace() {
   const { data: graph } = useSuspenseQuery(q.graph(caseId));
   const { data: det } = useSuspenseQuery(q.features(caseId));
   const { data: narrative } = useSuspenseQuery(q.narrative(caseId));
-  const agent = AGENT_BY_ID[inv.agentId];
-  const action = inv.actionId ? ACTION_BY_ID[inv.actionId] : undefined;
+  const { data: agents } = useSuspenseQuery(q.agents());
+  const { data: investigations } = useSuspenseQuery(q.investigations());
+  const agent = agents.find((a) => a.id === inv.agentId)!;
+  const [liveAction, setLiveAction] = useState<import("@/types").ContainmentAction | null>(null);
+  useEffect(() => {
+    if (!isDemoMode) void api.proposeContainment(caseId).then(setLiveAction);
+  }, [caseId]);
+  const action = isDemoMode ? (inv.actionId ? ACTION_BY_ID[inv.actionId] : undefined) : liveAction;
   const actionStatus = useDemo((s) => (inv.actionId ? s.actionStatus[inv.actionId] : undefined));
   const tour = useDemo((s) => s.tour);
   const status = actionStatus === "approved" ? "contained" : inv.status;
@@ -204,7 +212,7 @@ function Workspace() {
             className="rounded-md border border-border bg-card p-2 shadow-panel"
           >
             <div className="eyebrow px-2 py-1">Other cases</div>
-            {INVESTIGATIONS.map((c) => (
+            {investigations.map((c) => (
               <Link
                 key={c.id}
                 to="/investigations/$caseId"

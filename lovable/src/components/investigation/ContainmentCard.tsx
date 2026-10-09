@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { CheckCircle2, ShieldAlert, TriangleAlert, XCircle } from "lucide-react";
 import type { ContainmentAction } from "@/types";
-import { api } from "@/api";
+import { api, isDemoMode } from "@/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { useDemo } from "@/lib/demo-store";
 import { Button } from "@/components/ui/button";
 import { Mono, Tag } from "@/components/design-system/primitives";
@@ -23,12 +24,32 @@ export function ContainmentCard({
   action: ContainmentAction;
   compact?: boolean;
 }) {
-  const status = useDemo((s) => s.actionStatus[action.id] ?? "proposed");
+  const demoStatus = useDemo((s) => s.actionStatus[action.id] ?? "proposed");
+  const [liveStatus, setLiveStatus] = useState(action.status);
+  const status = isDemoMode ? demoStatus : liveStatus;
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+  const queryClient = useQueryClient();
+  async function decide(approved: boolean) {
+    setPending(true);
+    setError("");
+    try {
+      if (approved) await api.approveContainment(action.id, note);
+      else await api.rejectContainment(action.id, note);
+      setLiveStatus(approved ? "approved" : "rejected");
+      await queryClient.invalidateQueries();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setPending(false);
+    }
+  }
   const [note, setNote] = useState("");
   const decided = status !== "proposed";
   return (
     <div className="space-y-3">
       <SimulatedBanner />
+      {error && <p role="alert">{error}</p>}
       <div>
         <div className="flex items-center justify-between gap-2">
           <Mono className="text-muted-foreground">
@@ -102,11 +123,12 @@ export function ContainmentCard({
             <Button
               variant="ink"
               className="flex-1"
-              onClick={() => api.approveContainment(action.id, note)}
+              disabled={pending}
+              onClick={() => void decide(true)}
             >
               <CheckCircle2 /> Approve simulated containment
             </Button>
-            <Button variant="outline" onClick={() => api.rejectContainment(action.id, note)}>
+            <Button variant="outline" disabled={pending} onClick={() => void decide(false)}>
               <XCircle /> Reject
             </Button>
           </div>
@@ -121,8 +143,8 @@ export function ContainmentCard({
           )}
         >
           {status === "approved"
-            ? "Approved. In this demo the case is marked contained and the decision is written to the local audit trail. A real deployment would hand off to a permissioned backend."
-            : "Rejected. Recorded in the local audit trail; the case remains open."}
+            ? "Approved. The synthetic case is contained and the decision and simulated execution are recorded in the audit trail."
+            : "Rejected. The decision is recorded; the case remains open."}
         </div>
       )}
     </div>

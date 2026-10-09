@@ -137,13 +137,20 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
             <SyntheticBadge />
             <button
-              onClick={startTour}
+              onClick={() => (isDemoMode ? startTour() : window.location.assign("/playground"))}
               className="inline-flex h-7 items-center gap-1.5 rounded-sm px-2 text-[12px] font-medium text-foreground hover:bg-muted"
             >
               <Compass className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Tour</span>
             </button>
             <button
-              onClick={resetDemo}
+              onClick={() => {
+                if (isDemoMode) resetDemo();
+                else {
+                  sessionStorage.removeItem("agentdrift-session");
+                  sessionStorage.removeItem("agentdrift-active-run");
+                  window.location.assign("/");
+                }
+              }}
               className="inline-flex h-7 items-center gap-1.5 rounded-sm px-2 text-[12px] text-muted-foreground hover:bg-muted hover:text-foreground"
               title="Reset demo state"
             >
@@ -153,7 +160,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-8">{children}</main>
       </div>
-      <GuidedTour />
+      {isDemoMode && <GuidedTour />}
     </div>
   );
 }

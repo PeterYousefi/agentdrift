@@ -172,6 +172,8 @@ export interface NarrativeClaim {
 }
 
 export interface NarrativeEntry {
+  generatedBy?: "deterministic" | "azure-openai";
+  modelDeployment?: string | null;
   id: string;
   caseId: string;
   question: string;

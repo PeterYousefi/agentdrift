@@ -99,8 +99,14 @@ export function NarrativeNotebook({
   return (
     <article className="animate-event-in">
       <div className="flex flex-wrap items-center gap-1.5">
-        <ProvenanceLabel kind="genai" />
-        <Tag tone="warn">Synthetic example</Tag>
+        <Tag tone="outline">
+          {entry.generatedBy === "deterministic"
+            ? "Deterministic summary · no LLM"
+            : entry.generatedBy === "azure-openai"
+              ? "Azure OpenAI"
+              : "Illustrative fixture copy"}
+        </Tag>
+        <Tag tone="warn">Synthetic metadata</Tag>
         <Tag tone="outline">
           grounded in{" "}
           {new Set([...entry.facts, ...entry.inferences].flatMap((c) => c.evidenceIds)).size} events

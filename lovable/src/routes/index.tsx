@@ -1,3 +1,5 @@
+import { isDemoMode } from "@/api";
+import { LiveOverview } from "@/components/LiveOverview";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, Compass, PlayCircle } from "lucide-react";
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/")({
       context.queryClient.ensureQueryData(q.investigations()),
       context.queryClient.ensureQueryData(q.events({ caseOnly: true })),
     ]),
-  component: Overview,
+  component: () => (isDemoMode ? <Overview /> : <LiveOverview />),
 });
 
 function Overview() {
