@@ -1,0 +1,62 @@
+name: Validate
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e './backend[test]'
+      - run: pytest backend/tests -q
+      - run: ruff check backend/app backend/tests
+      - run: python -m app.evaluation
+      - run: docker build -t agentdrift:test backend
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lovable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: lovable/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm run build
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: pip install -e './backend[test]'
+      - run: npm ci
+        working-directory: lovable
+      - run: npx playwright install --with-deps chromium
+        working-directory: lovable
+      - run: |
+          uvicorn app.main:app --port 8000 > /tmp/api.log 2>&1 &
+          npm --prefix lovable run dev -- --host 127.0.0.1 --port 3000 > /tmp/web.log 2>&1 &
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3000/ && break || sleep 1; done
+      - run: npx playwright test
+        working-directory: lovable
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failure
+          path: lovable/test-results
