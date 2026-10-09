@@ -4,6 +4,7 @@ set -euo pipefail
 [[ "$ALLOW_AZURE_DEPLOY" == true ]] || exit 1
 rg_name=agentdrift-demo-rg
 region=${AZURE_REGION:-canadacentral}
+web_name=${FRONTEND_NAME:-peter-yousefi-agentdrift-demo}
 image=${AGENTDRIFT_IMAGE:-ghcr.io/peteryousefi/agentdrift:latest}
 # Validate public pull access before any provisioning.
 docker manifest inspect "$image" >/dev/null
@@ -12,11 +13,10 @@ az deployment sub create --location "$region" --name agentdrift-subscription-bud
 az group create --name "$rg_name" --location "$region" --output none
 # Budget included in both deployments; no paid registry or model service.
 az deployment group create --resource-group "$rg_name" --name agentdrift-foundation \
-  --template-file infra/azure/main.bicep --parameters deployApi=false --output none
+  --template-file infra/azure/main.bicep --parameters deployApi=false frontendName="$web_name" --output none
 az deployment group create --resource-group "$rg_name" --name agentdrift-runtime \
-  --template-file infra/azure/main.bicep --parameters deployApi=true image="$image" --output none
+  --template-file infra/azure/main.bicep --parameters deployApi=true image="$image" frontendName="$web_name" --output none
 api_host=$(az containerapp show -g "$rg_name" -n agentdrift-api --query properties.configuration.ingress.fqdn -o tsv)
-web_name=${FRONTEND_NAME:-peter-yousefi-agentdrift-demo}
 web_host=$(az webapp show -g "$rg_name" -n "$web_name" --query defaultHostName -o tsv)
 (
   cd lovable

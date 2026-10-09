@@ -90,7 +90,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = if (deployApi) {
           { name: 'ENVIRONMENT', value: 'production' }
           { name: 'AZURE_CLIENT_ID', value: identity.properties.clientId }
           { name: 'AZURE_TABLE_ENDPOINT', value: storage.properties.primaryEndpoints.table }
-          { name: 'CORS_ORIGINS', value: 'https://${frontend.properties.defaultHostname}' }
+          { name: 'CORS_ORIGINS', value: 'https://${frontend.properties.defaultHostName}' }
         ]
         probes: [
           { type: 'Liveness', httpGet: { path: '/health', port: 8000 }, initialDelaySeconds: 20, periodSeconds: 30 }
@@ -102,7 +102,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = if (deployApi) {
   }
   dependsOn: [tableRole, table]
 }
-output frontendHostname string = frontend.properties.defaultHostname
+output frontendHostname string = frontend.properties.defaultHostName
 output storageEndpoint string = storage.properties.primaryEndpoints.table
 output apiHostname string = deployApi ? api!.properties.configuration.ingress.fqdn : ''
 
