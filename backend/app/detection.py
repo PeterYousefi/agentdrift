@@ -6,10 +6,16 @@ from statistics import median
 
 from app.models import BehaviorBaseline, DetectionFinding, Operation, Severity
 
-VERSION = "rules-1.1"
+VERSION = "rules-1.2"
 # Trusted server policy, independent of scenario labels and untrusted event metadata.
 APPROVED_DESTINATIONS = {"ag-07": frozenset({"dst:approved-reporting"})}
 WINDOW = 300
+# Sequence correlation is independent of the statistical volume window.
+SEQUENCE_WINDOW = 900
+# Trusted configuration, not a claim that a transfer is benign. Per-window allowances
+# keep solitary ordinary exports visible at review-below-threshold rather than severe.
+ORDINARY_EXPORT_ALLOWANCES = {"ag-07": {"dst:forecast-model": 2 * 1024**3, "dst:approved-reporting": 1024**3}}
+VOLUME_ONLY_REVIEW_SCORE = 25
 
 
 def ordered(events):
@@ -62,35 +68,36 @@ def extract(events, baseline):
         for read in reads:
             if (
                 read.source_class != "restricted"
-                or not 0 < (send.event_time - read.event_time).total_seconds() <= WINDOW
+                or not 0 < (send.event_time - read.event_time).total_seconds() <= SEQUENCE_WINDOW
             ):
                 continue
-            stage = next(
-                (
-                    e
-                    for e in events
-                    if e.operation == Operation.WRITE and read.event_time < e.event_time < send.event_time
-                ),
-                None,
-            )
-            connection = next(
-                (
-                    e
-                    for e in events
-                    if e.operation == Operation.CONNECT
-                    and e.destination_id == send.destination_id
-                    and read.event_time < e.event_time <= send.event_time
-                ),
-                None,
-            )
-            # Correlation must agree: unrelated concurrent runs cannot create a sequence.
-            path = [read, stage, connection, send]
-            if (
-                all(path)
-                and len({e.correlation_id for e in path}) == 1
-                and len({e.scenario_run_id for e in path}) == 1
-            ):
-                sequence = [e.event_id for e in path]
+            # Search within the actual workflow; an unrelated earlier WRITE must
+            # neither complete nor mask a genuine correlated sequence.
+            stages = [
+                e
+                for e in events
+                if e.operation == Operation.WRITE
+                and read.event_time < e.event_time < send.event_time
+                and e.correlation_id == read.correlation_id == send.correlation_id
+                and e.scenario_run_id == read.scenario_run_id == send.scenario_run_id
+            ]
+            for stage in stages:
+                connection = next(
+                    (
+                        e
+                        for e in events
+                        if e.operation == Operation.CONNECT
+                        and e.destination_id == send.destination_id
+                        and stage.event_time < e.event_time <= send.event_time
+                        and e.correlation_id == send.correlation_id
+                        and e.scenario_run_id == send.scenario_run_id
+                    ),
+                    None,
+                )
+                if connection:
+                    sequence = [e.event_id for e in [read, stage, connection, send]]
+                    break
+            if sequence:
                 break
     duration = max(1, (events[-1].event_time - events[0].event_time).total_seconds()) if events else 1
     expected_windows = max(1, duration / 600)  # training fixture has one active cycle per ten minutes
@@ -100,6 +107,15 @@ def extract(events, baseline):
     return {
         "outbound_window_bytes": peak,
         "outbound_total_bytes": total,
+        "peak_window_send_count": max(
+            (
+                sum(0 <= (end.event_time - other.event_time).total_seconds() < WINDOW for other in sends)
+                for end in sends
+            ),
+            default=0,
+        ),
+        "restricted_read_count": sum(e.source_class == "restricted" for e in reads),
+        "sequence_window_seconds": SEQUENCE_WINDOW,
         "read_bytes": sum(e.bytes_transferred for e in reads),
         "volume_ratio": peak / max(1, baseline.typical_outbound_bytes),
         "robust_deviation": max(0, (peak - baseline.typical_outbound_bytes) / baseline.outbound_variability),
@@ -139,11 +155,35 @@ def detect(events, baseline):
     if not events:
         return None
     f = extract(events, baseline)
-    volume = 1 - exp(-max(0, f["robust_deviation"] - 3) / 8)
+    statistical_volume = (1 - exp(-max(0, f["robust_deviation"] - 3) / 8)) * 60
+    sends = [e for e in events if e.operation == Operation.SEND]
+    allowances = ORDINARY_EXPORT_ALLOWANCES.get(baseline.agent_id, {})
+    within_allowance = bool(sends) and all(
+        e.destination_id in allowances and e.bytes_transferred <= allowances[e.destination_id] for e in sends
+    )
+    ordinary_export = (
+        within_allowance
+        and f["peak_window_send_count"] == 1
+        and not f["restricted_read_count"]
+        and not f["sequence_event_ids"]
+        and not f["resource_novelty"]
+        and not f["identity_mismatch_count"]
+    )
+    # Learning baselines lack enough volume evidence; novelty, identity, sequence
+    # and cumulative rules remain independent. Never adapt to unverified live sends.
+    volume_score = statistical_volume if baseline.baseline_quality == "stable" else 0
+    if ordinary_export:
+        volume_score = min(volume_score, VOLUME_ONLY_REVIEW_SCORE)
+    f["statistical_volume_score"] = statistical_volume
+    f["volume_policy_applied"] = (
+        "learning_baseline"
+        if baseline.baseline_quality != "stable"
+        else ("ordinary_export_allowance" if ordinary_export else "full_volume")
+    )
     cumulative = (1 - exp(-max(0, f["cumulative_ratio"] - 2))) if f["repeated_small_transfers"] >= 8 else 0
-    # A volume-only event can merit review; a complete linked sequence is more severe.
+    # Statistical deviation is preserved separately from investigation policy.
     contributions = {
-        "VOLUME_DEVIATION": volume * 60,
+        "VOLUME_DEVIATION": volume_score,
         "NOVEL_DESTINATION": min(1, f["unapproved_destination_novelty"]) * 35,
         "NOVEL_RESOURCE": min(1, f["resource_novelty"]) * 10,
         "RESTRICTED_STAGE_SEND": bool(f["sequence_event_ids"]) * 50,

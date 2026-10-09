@@ -55,7 +55,7 @@ def test_approved_reporting_policy_preserves_novelty_and_real_alerts():
     assert finding.severity == Severity.NORMAL
     assert finding.feature_values["unapproved_destination_novelty"] == 0
     large = [
-        e.model_copy(update={"bytes_transferred": 950 * 1024 * 1024}) if e.operation == "SEND" else e
+        e.model_copy(update={"bytes_transferred": 1500 * 1024 * 1024}) if e.operation == "SEND" else e
         for e in benign
     ]
     assert detect(large, baseline()).anomaly_score >= 30
@@ -73,3 +73,65 @@ def test_untrusted_metadata_cannot_approve_destination():
         for e in generate("novel-endpoint", "forged")
     ]
     assert detect(events, baseline()).severity == Severity.REVIEW
+
+
+def test_learning_baseline_does_not_make_volume_a_verdict():
+    events = generate("benign-unusual", "learning")
+    finding = detect(events, build_baseline([], "ag-07"))
+    assert finding.anomaly_score < 30
+    assert finding.feature_values["volume_policy_applied"] == "learning_baseline"
+    novel = detect(generate("novel-endpoint", "new"), build_baseline([], "ag-07"))
+    assert novel.anomaly_score >= 30
+
+
+def test_trusted_single_export_is_visible_but_bursts_and_limits_remain_reviewable():
+    from app.scenarios import MB
+
+    events = generate("normal", "bulk")
+    events[-1].bytes_transferred = 1400 * MB
+    finding = detect(events, baseline())
+    assert 0 < finding.anomaly_score < 30
+    assert finding.feature_values["robust_deviation"] > 3
+    assert finding.feature_values["volume_policy_applied"] == "ordinary_export_allowance"
+    events[-1].bytes_transferred = 2200 * MB
+    assert detect(events, baseline()).anomaly_score >= 30
+    assert detect(generate("spike", "burst"), baseline()).anomaly_score >= 30
+    forged = [
+        e.model_copy(update={"metadata": {"ordinary_export_allowance": 10**12}})
+        for e in generate("novel-endpoint", "forged")
+    ]
+    assert detect(forged, baseline()).anomaly_score >= 30
+
+
+def test_sequence_crosses_volume_window_but_requires_bounded_ordered_workflow():
+    from datetime import timedelta
+
+    from app.scenarios import MB, MODEL, make_event
+
+    events = generate("read-then-send", "long")
+    start = events[0].event_time
+    for event, seconds in zip(events, [0, 180, 295, 420]):
+        event.event_time = start + timedelta(seconds=seconds)
+        if event.destination_id:
+            event.destination_id = MODEL
+        if event.operation == "SEND":
+            event.bytes_transferred = 80 * MB
+    finding = detect(events, baseline())
+    assert finding.anomaly_score >= 60
+    assert finding.feature_values["sequence_event_ids"] == [e.event_id for e in events]
+    unrelated = make_event("other-run", 40, 100, "WRITE", "stage:unrelated", MB)
+    assert detect(events + [unrelated], baseline()).feature_values["sequence_event_ids"] == [
+        e.event_id for e in events
+    ]
+    broken = [
+        e.model_copy(update={"correlation_id": "other"}) if e.operation == "WRITE" else e for e in events
+    ]
+    assert detect(broken, baseline()).feature_values["sequence_event_ids"] == []
+    reordered = [
+        e.model_copy(update={"event_time": start + timedelta(seconds=350)}) if e.operation == "CONNECT" else e
+        for e in events
+    ]
+    reordered[1].event_time = start + timedelta(seconds=400)
+    assert detect(reordered, baseline()).feature_values["sequence_event_ids"] == []
+    events[-1].event_time = start + timedelta(seconds=901)
+    assert detect(events, baseline()).feature_values["sequence_event_ids"] == []
