@@ -15,8 +15,9 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.containment import decide, propose
-from app.models import InvestigationReport, MovementEvent
-from app.reports import generate_report, narrative
+from app.models import MovementEvent
+from app.report_coordinator import ReportCoordinator
+from app.reports import configured, narrative
 from app.scenarios import AGENT, historical_events
 from app.service import Service
 from app.storage import create_store, partition
@@ -40,6 +41,7 @@ def create_app(store=None):
     @asynccontextmanager
     async def lifespan(app):
         app.state.service = Service(store or create_store())
+        app.state.reports = ReportCoordinator(app.state.service, lock)
 
         async def process():
             while True:
@@ -85,6 +87,7 @@ def create_app(store=None):
     async def bounds(request: Request, call_next):
         start = time.perf_counter()
         rid = uuid4().hex
+        request.state.correlation_id = rid
         ip = request.client.host if request.client else "unknown"
         now = time.time()
         bucket = limits[ip]
@@ -258,27 +261,30 @@ def create_app(store=None):
         with lock:
             return service().ui_features(sid, case_id)
 
-    def report_for(case_id, sid):
-        with lock:
-            case = service().case(sid, case_id)
-            existing = service().store.get(sid, "report-" + case_id)
-            if existing and set(existing["evidence_citations"]) == set(case["evidenceIds"]):
-                return InvestigationReport.model_validate(existing)
-            events = service().case_events(sid, case_id)
-            finding = service().store.get(sid, "finding-" + case["runId"])
-        report = generate_report(case, events, finding)
-        with lock:
-            service().store.put(sid, "report-" + case_id, report.model_dump(mode="json"))
-        return report
+    @app.get("/api/v1/analysis/status")
+    def analysis_status(sid=Depends(session)):
+        return {
+            "configured": configured(),
+            "available": "unknown" if configured() else "unconfigured",
+            "monthlyAttemptLimit": 100,
+            "dailyAttemptLimit": 10,
+            "sessionDailyAttemptLimit": 2,
+        }
 
     @app.post("/api/v1/investigations/{case_id}/investigate")
     def investigate(case_id: str, sid=Depends(session)):
-        return narrative(report_for(case_id, sid))
+        # Legacy narrative reads never invoke a billable model.
+        return narrative(app.state.reports.report(sid, case_id))
 
     @app.get("/api/v1/investigations/{case_id}/report")
-    @app.post("/api/v1/investigations/{case_id}/report")
     def report(case_id: str, sid=Depends(session)):
-        return report_for(case_id, sid)
+        return app.state.reports.report(sid, case_id)
+
+    @app.post("/api/v1/investigations/{case_id}/report")
+    def generate_analysis(case_id: str, request: Request, sid=Depends(session)):
+        return app.state.reports.report(
+            sid, case_id, generate=True, correlation_id=request.state.correlation_id
+        )
 
     @app.post("/api/v1/investigations/{case_id}/containment")
     def proposal(case_id: str, sid=Depends(session)):

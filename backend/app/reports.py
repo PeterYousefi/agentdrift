@@ -96,7 +96,9 @@ def provider_schema():
     return schema
 
 
-def generate_report(case, evidence, finding, client=None, reserve=None, correlation_id=None):
+def generate_report(
+    case, evidence, finding, client=None, reserve=None, correlation_id=None, allow_model=True
+):
     started = time.perf_counter()
     correlation_id = correlation_id or uuid4().hex
     fingerprint = ""
@@ -104,7 +106,7 @@ def generate_report(case, evidence, finding, client=None, reserve=None, correlat
     try:
         bundle, fingerprint = build_bundle(case, evidence, finding)
         deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT")
-        enabled = configured() or (client is not None and bool(deployment))
+        enabled = allow_model and (configured() or (client is not None and bool(deployment)))
         if not enabled:
             raise RuntimeError("not_configured")
         if client is None:
