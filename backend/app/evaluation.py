@@ -4,6 +4,7 @@ import json
 import time
 from pathlib import Path
 
+from app.challenge_evaluation import evaluate_challenges
 from app.detection import VERSION, build_baseline, detect
 from app.scenarios import CATALOG, generate, historical_events
 
@@ -83,6 +84,7 @@ def evaluate(seeds=range(100, 120)):
 
 if __name__ == "__main__":
     result = evaluate()
+    result["expandedEvaluation"] = evaluate_challenges()
     path = Path(__file__).parent.parent / "evaluation.json"
     path.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({k: v for k, v in result.items() if k != "results"}, indent=2))
