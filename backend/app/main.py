@@ -43,7 +43,7 @@ def create_app(store=None):
 
         async def process():
             while True:
-                await asyncio.sleep(0.25)
+                await asyncio.sleep(10)
 
                 # Reads and mutation use the same lock. One replica is required for this MVP.
                 def tick():
@@ -51,6 +51,7 @@ def create_app(store=None):
                         for session in app.state.service.store.list("system", "session-"):
                             if session["expires"] < time.time():
                                 app.state.service.store.delete_partition(session["partition"])
+                                app.state.service.store.delete("system", "session-" + session["partition"])
                                 continue
                             for run in app.state.service.runs(session["partition"]):
                                 if run["status"] == "running":
@@ -72,7 +73,9 @@ def create_app(store=None):
     app = FastAPI(title="AgentDrift", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000").split(","),
+        allow_origins=os.getenv(
+            "CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000"
+        ).split(","),
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Content-Type", "X-Demo-Session", "Last-Event-ID"],
         expose_headers=["X-Request-ID"],

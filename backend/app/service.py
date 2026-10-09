@@ -100,6 +100,8 @@ class Service:
         generated = generate(run["scenarioId"], run_id)
         first = generated[0].event_time
         due = [e for e in generated if (e.event_time - first).total_seconds() <= elapsed]
+        if len(due) <= run["eventCount"]:
+            return run
         self.ingest(session, run_id, due)
         run = self.run(session, run_id)
         if len(due) == len(generated):

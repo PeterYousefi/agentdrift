@@ -49,6 +49,11 @@ class SQLiteStore:
             self.db.execute("DELETE FROM documents WHERE session=?", (session,))
             self.db.commit()
 
+    def delete(self, session, key):
+        with self.lock:
+            self.db.execute("DELETE FROM documents WHERE session=? AND key=?", (session, key))
+            self.db.commit()
+
 
 class AzureTableStore:
     def __init__(self, endpoint):
@@ -59,6 +64,7 @@ class AzureTableStore:
             "AgentDrift"
         )
         from azure.core.exceptions import ResourceExistsError
+
         try:
             self.client.create_table()
         except ResourceExistsError:
@@ -76,12 +82,18 @@ class AzureTableStore:
         self.client.upsert_entity({"PartitionKey": session, "RowKey": key, "document": json.dumps(value)})
 
     def list(self, session, prefix):
-        rows = self.client.query_entities("PartitionKey eq @session", parameters={"session": session})
+        rows = self.client.query_entities(
+            "PartitionKey eq @session and RowKey ge @lower and RowKey lt @upper",
+            parameters={"session": session, "lower": prefix, "upper": prefix + "\uffff"},
+        )
         return [json.loads(row["document"]) for row in rows if row["RowKey"].startswith(prefix)]
 
     def delete_partition(self, session):
         for row in self.client.query_entities("PartitionKey eq @session", parameters={"session": session}):
             self.client.delete_entity(session, row["RowKey"])
+
+    def delete(self, session, key):
+        self.client.delete_entity(session, key)
 
 
 def create_store():
