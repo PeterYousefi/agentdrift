@@ -20,7 +20,11 @@ export function CopyId({ id }: { id: string }) {
       aria-label={`Copy event ID ${id}`}
     >
       {id}
-      {done ? <Check className="h-3 w-3 text-primary" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+      {done ? (
+        <Check className="h-3 w-3 text-primary" />
+      ) : (
+        <Copy className="h-3 w-3 text-muted-foreground" />
+      )}
     </button>
   );
 }
@@ -48,35 +52,63 @@ export function EventDetail({ event }: { event: MovementEvent }) {
         </div>
       </div>
       <dl>
-        <Row k="Timestamp"><Mono>{event.ts}</Mono></Row>
+        <Row k="Timestamp">
+          <Mono>{event.ts}</Mono>
+        </Row>
         <Row k="Source">
-          {isOut ? <Mono>{event.workloadId}</Mono> : <span>{ent?.label} <Mono className="text-muted-foreground">({resourceClassOf(event.target)})</Mono></span>}
+          {isOut ? (
+            <Mono>{event.workloadId}</Mono>
+          ) : (
+            <span>
+              {ent?.label}{" "}
+              <Mono className="text-muted-foreground">({resourceClassOf(event.target)})</Mono>
+            </span>
+          )}
         </Row>
         <Row k="Destination">
           {isOut ? (
             <span>
               {ent?.label}
-              <div><Mono className="text-muted-foreground">{ent?.host}</Mono></div>
+              <div>
+                <Mono className="text-muted-foreground">{ent?.host}</Mono>
+              </div>
             </span>
           ) : (
             <Mono>{event.workloadId}</Mono>
           )}
         </Row>
         <Row k={isOut ? "Dest. class" : "Resource class"}>
-          <Tag tone={destClassOf(event.target) === "external-unknown" ? "danger" : "neutral"}>{isOut ? destClassOf(event.target) ?? "—" : resourceClassOf(event.target)}</Tag>
+          <Tag tone={destClassOf(event.target) === "external-unknown" ? "danger" : "neutral"}>
+            {isOut ? (destClassOf(event.target) ?? "—") : resourceClassOf(event.target)}
+          </Tag>
         </Row>
-        <Row k="Bytes"><Mono>{fmtBytes(event.bytes)}</Mono> <Mono className="text-muted-foreground">({event.bytes.toLocaleString()} B)</Mono></Row>
+        <Row k="Bytes">
+          <Mono>{fmtBytes(event.bytes)}</Mono>{" "}
+          <Mono className="text-muted-foreground">({event.bytes.toLocaleString()} B)</Mono>
+        </Row>
         <Row k="Identity">
           <Mono>{event.identity}</Mono>
-          <div className="text-[11.5px] text-muted-foreground">Attribution confidence <Mono>{event.identityConfidence.toFixed(2)}</Mono> · agent {agent?.name}</div>
+          <div className="text-[11.5px] text-muted-foreground">
+            Attribution confidence <Mono>{event.identityConfidence.toFixed(2)}</Mono> · agent{" "}
+            {agent?.name}
+          </div>
         </Row>
-        {event.caseId && <Row k="Linked case"><Mono>{event.caseId}</Mono></Row>}
+        {event.caseId && (
+          <Row k="Linked case">
+            <Mono>{event.caseId}</Mono>
+          </Row>
+        )}
       </dl>
       <div className="mt-3 rounded-sm border-l-2 border-primary bg-muted px-3 py-2">
         <div className="eyebrow mb-0.5">Why this event matters</div>
-        <p className="text-[12.5px] leading-relaxed text-foreground">{event.note ?? "Baseline-consistent activity. Shown for context; it does not contribute to the anomaly score."}</p>
+        <p className="text-[12.5px] leading-relaxed text-foreground">
+          {event.note ??
+            "Baseline-consistent activity. Shown for context; it does not contribute to the anomaly score."}
+        </p>
       </div>
-      <p className="mt-2 text-[10.5px] text-muted-foreground">Metadata only — no file contents, prompts or completions are captured.</p>
+      <p className="mt-2 text-[10.5px] text-muted-foreground">
+        Metadata only — no file contents, prompts or completions are captured.
+      </p>
     </div>
   );
 }

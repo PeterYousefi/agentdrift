@@ -8,7 +8,11 @@ function history(seed: number, sent: number, read: number, shape: (i: number) =>
   return Array.from({ length: 14 }, (_, i) => {
     const day = new Date(Date.UTC(2026, 8, 25 + i)).toISOString().slice(0, 10);
     const j = 0.8 + r() * 0.4;
-    return { day, sent: Math.round(sent * j * shape(i)), read: Math.round(read * (0.85 + r() * 0.3)) };
+    return {
+      day,
+      sent: Math.round(sent * j * shape(i)),
+      read: Math.round(read * (0.85 + r() * 0.3)),
+    };
   });
 }
 
@@ -18,7 +22,8 @@ const base: (Base & { hist: Agent["history"] })[] = [
   {
     id: "ag-07",
     name: "Research Agent 07",
-    description: "Quantitative research assistant. Pulls feature sets and calls the approved forecast model to draft signal studies.",
+    description:
+      "Quantitative research assistant. Pulls feature sets and calls the approved forecast model to draft signal studies.",
     workload: "quant-research-runner",
     namespace: "quant-ws/research",
     identity: "mi-quant-research",
@@ -40,7 +45,8 @@ const base: (Base & { hist: Agent["history"] })[] = [
   {
     id: "ag-03",
     name: "Research Agent 03",
-    description: "Cross-asset research agent that summarizes alternative signals for the macro desk.",
+    description:
+      "Cross-asset research agent that summarizes alternative signals for the macro desk.",
     workload: "macro-signal-worker",
     namespace: "quant-ws/macro",
     identity: "mi-macro-research",

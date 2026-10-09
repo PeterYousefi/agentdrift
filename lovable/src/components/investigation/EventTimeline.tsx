@@ -30,16 +30,35 @@ export function EventTimeline({
                 sel && "bg-accent hover:bg-accent",
               )}
             >
-              <span className="font-mono text-[11px] text-muted-foreground tabular">{fmtTime(e.ts)}</span>
+              <span className="font-mono text-[11px] text-muted-foreground tabular">
+                {fmtTime(e.ts)}
+              </span>
               <span className="flex justify-center">
-                <span className={cn("relative z-10 h-2.5 w-2.5 rounded-full border-2 bg-card", e.novel ? "border-danger" : "border-primary", sel && "bg-primary")} />
+                <span
+                  className={cn(
+                    "relative z-10 h-2.5 w-2.5 rounded-full border-2 bg-card",
+                    e.novel ? "border-danger" : "border-primary",
+                    sel && "bg-primary",
+                  )}
+                />
               </span>
               <span className="flex min-w-0 items-center gap-2">
                 <OpTag op={e.operation} anomalous={e.novel} />
-                <span className="truncate text-[12.5px] text-foreground">{ENTITIES[e.target]?.label ?? e.target}</span>
-                <span className="hidden font-mono text-[10.5px] text-muted-foreground lg:inline">{e.id}</span>
+                <span className="truncate text-[12.5px] text-foreground">
+                  {ENTITIES[e.target]?.label ?? e.target}
+                </span>
+                <span className="hidden font-mono text-[10.5px] text-muted-foreground lg:inline">
+                  {e.id}
+                </span>
               </span>
-              <span className={cn("font-mono text-[11.5px] tabular", e.novel ? "text-danger" : "text-foreground")}>{fmtBytes(e.bytes)}</span>
+              <span
+                className={cn(
+                  "font-mono text-[11.5px] tabular",
+                  e.novel ? "text-danger" : "text-foreground",
+                )}
+              >
+                {fmtBytes(e.bytes)}
+              </span>
             </button>
           </li>
         );

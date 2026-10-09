@@ -13,8 +13,13 @@ export const STAGES = [
 ] as const;
 export type StageKey = (typeof STAGES)[number]["key"];
 
-export function stageForEvent(e: Scenario["events"][number], agent: Pick<Agent, "baseline">): StageKey {
-  const known = [...agent.baseline.knownResources, ...agent.baseline.knownDestinations].includes(e.target);
+export function stageForEvent(
+  e: Scenario["events"][number],
+  agent: Pick<Agent, "baseline">,
+): StageKey {
+  const known = [...agent.baseline.knownResources, ...agent.baseline.knownDestinations].includes(
+    e.target,
+  );
   if (e.operation === "WRITE") return "staging";
   if (known) return "baseline";
   return e.operation === "READ" ? "access" : "outbound";

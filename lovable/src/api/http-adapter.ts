@@ -19,7 +19,8 @@ export function createHttpAdapter(baseUrl: string): AgentDriftApi {
     return schema ? schema.parse(json) : (json as T);
   }
   const get = <T>(p: string, s: z.ZodType<T> | null, signal?: AbortSignal) => req(p, s, { signal });
-  const post = <T>(p: string, body?: unknown) => req<T>(p, null, { method: "POST", body: body ? JSON.stringify(body) : undefined });
+  const post = <T>(p: string, body?: unknown) =>
+    req<T>(p, null, { method: "POST", body: body ? JSON.stringify(body) : undefined });
 
   return {
     mode: "http",
@@ -33,12 +34,14 @@ export function createHttpAdapter(baseUrl: string): AgentDriftApi {
     },
     getInvestigations: (signal) => get("/investigations", z.array(InvestigationSchema), signal),
     getInvestigation: (id, signal) => get(`/investigations/${id}`, InvestigationSchema, signal),
-    getInvestigationEvidence: (id, signal) => get(`/investigations/${id}/evidence`, z.array(MovementEventSchema), signal),
+    getInvestigationEvidence: (id, signal) =>
+      get(`/investigations/${id}/evidence`, z.array(MovementEventSchema), signal),
     getMovementGraph: (id, signal) => get(`/investigations/${id}/graph`, null, signal),
     getScenarios: (signal) => get("/scenarios", null, signal),
     runScenario: (id) => post(`/scenarios/${id}/runs`),
     getScenarioRun: (runId) => get(`/scenario-runs/${runId}`, null),
-    getScenarioEvents: (runId) => get(`/scenario-runs/${runId}/events`, z.array(MovementEventSchema)),
+    getScenarioEvents: (runId) =>
+      get(`/scenario-runs/${runId}/events`, z.array(MovementEventSchema)),
     investigateCase: (id) => post(`/investigations/${id}/investigate`),
     getDetectionFeatures: (id, signal) => get(`/investigations/${id}/features`, null, signal),
     proposeContainment: (id) => post(`/investigations/${id}/containment`),

@@ -12,17 +12,49 @@ export const api: AgentDriftApi = DEMO !== "false" || !BASE ? mockAdapter : crea
 export const isDemoMode = api.mode === "mock";
 
 export const q = {
-  overview: () => queryOptions({ queryKey: ["overview"], queryFn: ({ signal }) => api.getOverview(signal) }),
-  agents: () => queryOptions({ queryKey: ["agents"], queryFn: ({ signal }) => api.getAgents(signal) }),
-  agent: (id: string) => queryOptions({ queryKey: ["agent", id], queryFn: ({ signal }) => api.getAgent(id, signal) }),
-  events: (f: MovementFilters) => queryOptions({ queryKey: ["events", f], queryFn: ({ signal }) => api.getMovementEvents(f, signal) }),
-  investigations: () => queryOptions({ queryKey: ["investigations"], queryFn: ({ signal }) => api.getInvestigations(signal) }),
-  investigation: (id: string) => queryOptions({ queryKey: ["investigation", id], queryFn: ({ signal }) => api.getInvestigation(id, signal) }),
-  evidence: (id: string) => queryOptions({ queryKey: ["evidence", id], queryFn: ({ signal }) => api.getInvestigationEvidence(id, signal) }),
-  graph: (id: string) => queryOptions({ queryKey: ["graph", id], queryFn: ({ signal }) => api.getMovementGraph(id, signal) }),
-  features: (id: string) => queryOptions({ queryKey: ["features", id], queryFn: ({ signal }) => api.getDetectionFeatures(id, signal) }),
-  narrative: (id: string) => queryOptions({ queryKey: ["narrative", id], queryFn: ({ signal }) => api.investigateCase(id, signal) }),
-  scenarios: () => queryOptions({ queryKey: ["scenarios"], queryFn: ({ signal }) => api.getScenarios(signal) }),
+  overview: () =>
+    queryOptions({ queryKey: ["overview"], queryFn: ({ signal }) => api.getOverview(signal) }),
+  agents: () =>
+    queryOptions({ queryKey: ["agents"], queryFn: ({ signal }) => api.getAgents(signal) }),
+  agent: (id: string) =>
+    queryOptions({ queryKey: ["agent", id], queryFn: ({ signal }) => api.getAgent(id, signal) }),
+  events: (f: MovementFilters) =>
+    queryOptions({
+      queryKey: ["events", f],
+      queryFn: ({ signal }) => api.getMovementEvents(f, signal),
+    }),
+  investigations: () =>
+    queryOptions({
+      queryKey: ["investigations"],
+      queryFn: ({ signal }) => api.getInvestigations(signal),
+    }),
+  investigation: (id: string) =>
+    queryOptions({
+      queryKey: ["investigation", id],
+      queryFn: ({ signal }) => api.getInvestigation(id, signal),
+    }),
+  evidence: (id: string) =>
+    queryOptions({
+      queryKey: ["evidence", id],
+      queryFn: ({ signal }) => api.getInvestigationEvidence(id, signal),
+    }),
+  graph: (id: string) =>
+    queryOptions({
+      queryKey: ["graph", id],
+      queryFn: ({ signal }) => api.getMovementGraph(id, signal),
+    }),
+  features: (id: string) =>
+    queryOptions({
+      queryKey: ["features", id],
+      queryFn: ({ signal }) => api.getDetectionFeatures(id, signal),
+    }),
+  narrative: (id: string) =>
+    queryOptions({
+      queryKey: ["narrative", id],
+      queryFn: ({ signal }) => api.investigateCase(id, signal),
+    }),
+  scenarios: () =>
+    queryOptions({ queryKey: ["scenarios"], queryFn: ({ signal }) => api.getScenarios(signal) }),
 };
 
 export type { AgentDriftApi };

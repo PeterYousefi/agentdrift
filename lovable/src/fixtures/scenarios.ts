@@ -8,7 +8,8 @@ export const SCENARIOS: Scenario[] = [
     index: 1,
     name: "Normal research workflow",
     agentId: "ag-07",
-    description: "Research Agent 07 reads its usual feature store and calls the approved forecast model.",
+    description:
+      "Research Agent 07 reads its usual feature store and calls the approved forecast model.",
     expected: "Score stays below the review threshold. No case is created.",
     expectedLevel: "normal",
     events: [
@@ -26,7 +27,8 @@ export const SCENARIOS: Scenario[] = [
     name: "Sudden outbound volume spike",
     agentId: "ag-07",
     description: "Same known destinations, but outbound volume jumps sharply within one window.",
-    expected: "Volume saturates (9×) yet the score stays below review — destinations and resources are known. Volume alone is not drift.",
+    expected:
+      "Volume saturates (9×) yet the score stays below review — destinations and resources are known. Volume alone is not drift.",
     expectedLevel: "normal",
     events: [
       { offset: 0, operation: "READ", target: "res:research-features", bytes: 44 * MB_ },
@@ -47,7 +49,13 @@ export const SCENARIOS: Scenario[] = [
     linkedCaseId: "CASE-2035",
     events: [
       { offset: 0, operation: "READ", target: "res:research-features", bytes: 40 * MB_ },
-      { offset: 4, operation: "CONNECT", target: "dst:unknown-ext", bytes: 6 * KB, note: "First-seen endpoint" },
+      {
+        offset: 4,
+        operation: "CONNECT",
+        target: "dst:unknown-ext",
+        bytes: 6 * KB,
+        note: "First-seen endpoint",
+      },
       { offset: 8, operation: "SEND", target: "dst:unknown-ext", bytes: 420 * MB_ },
       { offset: 13, operation: "SEND", target: "dst:unknown-ext", bytes: 380 * MB_ },
     ],
@@ -57,17 +65,36 @@ export const SCENARIOS: Scenario[] = [
     index: 4,
     name: "Sensitive-read-then-send sequence",
     agentId: "ag-07",
-    description: "The flagship scenario: novel restricted dataset read, staging write, then bulk transfer to an unfamiliar endpoint.",
+    description:
+      "The flagship scenario: novel restricted dataset read, staging write, then bulk transfer to an unfamiliar endpoint.",
     expected: "All four features fire. Score crosses critical and opens CASE-2041.",
     expectedLevel: "critical",
     linkedCaseId: "CASE-2041",
     events: [
       { offset: 0, operation: "READ", target: "res:research-features", bytes: 42 * MB_ },
       { offset: 3, operation: "CONNECT", target: "dst:forecast-model", bytes: 4 * KB },
-      { offset: 6, operation: "READ", target: "res:strategy-archive", bytes: 612 * MB_, note: "Novel resource" },
+      {
+        offset: 6,
+        operation: "READ",
+        target: "res:strategy-archive",
+        bytes: 612 * MB_,
+        note: "Novel resource",
+      },
       { offset: 9, operation: "READ", target: "res:strategy-archive", bytes: 588 * MB_ },
-      { offset: 12, operation: "WRITE", target: "stg:tmp-export", bytes: 1126 * MB_, note: "Staging" },
-      { offset: 15, operation: "CONNECT", target: "dst:unknown-ext", bytes: 6 * KB, note: "Novel destination" },
+      {
+        offset: 12,
+        operation: "WRITE",
+        target: "stg:tmp-export",
+        bytes: 1126 * MB_,
+        note: "Staging",
+      },
+      {
+        offset: 15,
+        operation: "CONNECT",
+        target: "dst:unknown-ext",
+        bytes: 6 * KB,
+        note: "Novel destination",
+      },
       { offset: 18, operation: "SEND", target: "dst:unknown-ext", bytes: 486 * MB_ },
       { offset: 21, operation: "SEND", target: "dst:unknown-ext", bytes: 512 * MB_ },
     ],
@@ -77,8 +104,10 @@ export const SCENARIOS: Scenario[] = [
     index: 5,
     name: "Gradual low-and-slow drift",
     agentId: "ag-03",
-    description: "Small, steadily increasing transfers to an external bucket, each below static thresholds.",
-    expected: "No single event is large. Score climbs gradually into elevated as novelty and sequence accumulate.",
+    description:
+      "Small, steadily increasing transfers to an external bucket, each below static thresholds.",
+    expected:
+      "No single event is large. Score climbs gradually into elevated as novelty and sequence accumulate.",
     expectedLevel: "elevated",
     linkedCaseId: "CASE-2038",
     events: [
@@ -86,7 +115,13 @@ export const SCENARIOS: Scenario[] = [
       { offset: 4, operation: "SEND", target: "dst:partner-bucket", bytes: 40 * MB_ },
       { offset: 8, operation: "SEND", target: "dst:partner-bucket", bytes: 60 * MB_ },
       { offset: 12, operation: "SEND", target: "dst:partner-bucket", bytes: 85 * MB_ },
-      { offset: 16, operation: "READ", target: "res:research-features", bytes: 90 * MB_, note: "Novel resource" },
+      {
+        offset: 16,
+        operation: "READ",
+        target: "res:research-features",
+        bytes: 90 * MB_,
+        note: "Novel resource",
+      },
       { offset: 20, operation: "SEND", target: "dst:partner-bucket", bytes: 110 * MB_ },
       { offset: 22, operation: "READ", target: "res:signals-lake", bytes: 120 * MB_ },
       { offset: 26, operation: "SEND", target: "dst:partner-bucket", bytes: 140 * MB_ },
@@ -98,7 +133,8 @@ export const SCENARIOS: Scenario[] = [
     name: "Benign but unusual activity",
     agentId: "ag-05",
     description: "Quarter-end reporting: large volume, but only known resources and destinations.",
-    expected: "A static rule would fire; the behavioral score stays low. Should not be auto-treated as malicious.",
+    expected:
+      "A static rule would fire; the behavioral score stays low. Should not be auto-treated as malicious.",
     expectedLevel: "normal",
     linkedCaseId: "CASE-2029",
     events: [

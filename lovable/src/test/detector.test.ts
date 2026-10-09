@@ -13,8 +13,11 @@ describe("detector", () => {
   it("benign quarter-end case scores normal", () => {
     expect(INVESTIGATION_BY_ID["CASE-2029"].severity).toBe("normal");
   });
-  it.each(SCENARIOS.map((s) => [s.id, s] as const))("scenario %s ends at its expected level", (_, s) => {
-    const evts = emittedEvents({ scenarioId: s.id, runId: "t", elapsed: 999, status: "done" });
-    expect(scoreWindow(evts, AGENT_BY_ID[s.agentId]).level).toBe(s.expectedLevel);
-  });
+  it.each(SCENARIOS.map((s) => [s.id, s] as const))(
+    "scenario %s ends at its expected level",
+    (_, s) => {
+      const evts = emittedEvents({ scenarioId: s.id, runId: "t", elapsed: 999, status: "done" });
+      expect(scoreWindow(evts, AGENT_BY_ID[s.agentId]).level).toBe(s.expectedLevel);
+    },
+  );
 });

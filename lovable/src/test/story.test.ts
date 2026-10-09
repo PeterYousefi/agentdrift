@@ -6,7 +6,14 @@ import { scoreHistory } from "@/lib/story";
 
 const hist = (id: string) => {
   const sc = SCENARIO_BY_ID[id];
-  return scoreHistory(sc, AGENT_BY_ID[sc.agentId], (n) => emittedEvents({ scenarioId: id, runId: "t", elapsed: sc.events[n - 1].offset, status: "running" }));
+  return scoreHistory(sc, AGENT_BY_ID[sc.agentId], (n) =>
+    emittedEvents({
+      scenarioId: id,
+      runId: "t",
+      elapsed: sc.events[n - 1].offset,
+      status: "running",
+    }),
+  );
 };
 
 describe("scenario story", () => {
@@ -16,5 +23,6 @@ describe("scenario story", () => {
     expect(h.alertIndex).toBeGreaterThan(0);
     expect(h.alertIndex).toBeLessThan(h.scores.length);
   });
-  it("is deterministic across runs", () => expect(hist("read-then-send").scores).toEqual(hist("read-then-send").scores));
+  it("is deterministic across runs", () =>
+    expect(hist("read-then-send").scores).toEqual(hist("read-then-send").scores));
 });

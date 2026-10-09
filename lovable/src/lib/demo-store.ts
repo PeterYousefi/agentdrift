@@ -41,9 +41,33 @@ const KEY = "agentdrift-demo-v1";
 const initial = (): DemoState => ({
   actionStatus: Object.fromEntries(ACTIONS.map((a) => [a.id, "proposed"])),
   audit: [
-    { id: "aud-0001", ts: "2026-10-08T14:09:53Z", actionId: "ACT-2041", caseId: "CASE-2041", decision: "proposed", actor: "detector (synthetic)", note: "Containment proposed after score crossed critical threshold." },
-    { id: "aud-0002", ts: "2026-10-08T12:30:42Z", actionId: "ACT-2035", caseId: "CASE-2035", decision: "proposed", actor: "detector (synthetic)", note: "Non-blocking watchlist proposed for ambiguous novelty." },
-    { id: "aud-0003", ts: "2026-10-08T10:41:12Z", actionId: "ACT-2038", caseId: "CASE-2038", decision: "proposed", actor: "detector (synthetic)", note: "Transfer hold proposed for gradual drift." },
+    {
+      id: "aud-0001",
+      ts: "2026-10-08T14:09:53Z",
+      actionId: "ACT-2041",
+      caseId: "CASE-2041",
+      decision: "proposed",
+      actor: "detector (synthetic)",
+      note: "Containment proposed after score crossed critical threshold.",
+    },
+    {
+      id: "aud-0002",
+      ts: "2026-10-08T12:30:42Z",
+      actionId: "ACT-2035",
+      caseId: "CASE-2035",
+      decision: "proposed",
+      actor: "detector (synthetic)",
+      note: "Non-blocking watchlist proposed for ambiguous novelty.",
+    },
+    {
+      id: "aud-0003",
+      ts: "2026-10-08T10:41:12Z",
+      actionId: "ACT-2038",
+      caseId: "CASE-2038",
+      decision: "proposed",
+      actor: "detector (synthetic)",
+      note: "Transfer hold proposed for gradual drift.",
+    },
   ],
   tour: { active: false, step: 0, seen: false },
   playback: { scenarioId: "read-then-send", runId: null, elapsed: 0, status: "idle" },
@@ -109,7 +133,17 @@ export function decideAction(actionId: string, decision: "approved" | "rejected"
   set((s) => ({
     actionStatus: { ...s.actionStatus, [actionId]: decision },
     audit: [
-      { id: auditId(), ts: nowIso(), actionId, caseId: action.caseId, decision, actor: "demo analyst (you)", note: note || (decision === "approved" ? "Simulated containment approved." : "Proposal rejected.") },
+      {
+        id: auditId(),
+        ts: nowIso(),
+        actionId,
+        caseId: action.caseId,
+        decision,
+        actor: "demo analyst (you)",
+        note:
+          note ||
+          (decision === "approved" ? "Simulated containment approved." : "Proposal rejected."),
+      },
       ...s.audit,
     ],
   }));
@@ -179,11 +213,21 @@ function tick() {
   const patch: Partial<DemoState> = { playback: next };
   if (!alreadyAlerted && res.score >= THRESHOLDS.review) {
     patch.alerts = [
-      { id: `SIM-${p.runId}`, scenarioId: sc.id, runId: p.runId!, score: res.score, level: res.level, ts: nowIso(), linkedCaseId: sc.linkedCaseId },
+      {
+        id: `SIM-${p.runId}`,
+        scenarioId: sc.id,
+        runId: p.runId!,
+        score: res.score,
+        level: res.level,
+        ts: nowIso(),
+        linkedCaseId: sc.linkedCaseId,
+      },
       ...state.alerts,
     ];
   } else if (alreadyAlerted) {
-    patch.alerts = state.alerts.map((a) => (a.runId === p.runId ? { ...a, score: res.score, level: res.level } : a));
+    patch.alerts = state.alerts.map((a) =>
+      a.runId === p.runId ? { ...a, score: res.score, level: res.level } : a,
+    );
   }
   set(patch);
   if (next.status === "done") stopTimer();
@@ -199,7 +243,10 @@ export function runScenario(scenarioId?: string) {
   const id = scenarioId ?? state.playback.scenarioId;
   const n = state.runCounter + 1;
   const runId = `run-${String(n).padStart(3, "0")}`;
-  set({ runCounter: n, playback: { scenarioId: id, runId, elapsed: -SECONDS_PER_TICK, status: "running" } });
+  set({
+    runCounter: n,
+    playback: { scenarioId: id, runId, elapsed: -SECONDS_PER_TICK, status: "running" },
+  });
   tick();
   timer = setInterval(tick, TICK_MS);
 }

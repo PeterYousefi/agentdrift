@@ -16,7 +16,14 @@ export const DestClassSchema = z.enum([
 ]);
 export type DestinationClass = z.infer<typeof DestClassSchema>;
 
-export const EntityKindSchema = z.enum(["agent", "process", "identity", "resource", "endpoint", "staging"]);
+export const EntityKindSchema = z.enum([
+  "agent",
+  "process",
+  "identity",
+  "resource",
+  "endpoint",
+  "staging",
+]);
 export type EntityKind = z.infer<typeof EntityKindSchema>;
 
 export const AgentSchema = z.object({
