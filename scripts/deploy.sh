@@ -21,6 +21,7 @@ web_host=$(az staticwebapp show -g "$rg_name" -n agentdrift-web --query defaultH
   cd lovable
   VITE_DEMO_MODE=false VITE_API_BASE_URL="https://$api_host/api/v1" npm run build
 )
+cp lovable/.output/public/_shell.html lovable/.output/public/index.html
 # The Static Web Apps deployment token stays in process memory, never a tracked file.
 swa_token=$(az staticwebapp secrets list -g "$rg_name" -n agentdrift-web --query properties.apiKey -o tsv)
 SWA_CLI_DEPLOYMENT_TOKEN="$swa_token" npx --yes @azure/static-web-apps-cli deploy lovable/.output/public --env production
