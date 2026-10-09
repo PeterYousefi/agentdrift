@@ -8,7 +8,7 @@ AI-agent metadata movement investigation with Python behavioral detection, linke
 
 ![Validate](https://github.com/PeterYousefi/agentdrift/actions/workflows/validate.yml/badge.svg)
 
-![Actual local investigation screenshot](docs/assets/investigation.png)
+![Actual hosted investigation screenshot](docs/assets/investigation.png)
 
 The existing Lovable UI is preserved: React 19, TanStack Start/Router/Query, React Flow, Tailwind and Radix. FastAPI/Pydantic provides six deterministic scenarios, historical baselines, robust volume/novelty rules, temporal correlation, persisted cases, citation-validated reports and audited simulation. SQLite supports local development; The live deployment uses Azure Table Storage with managed identity. Azure OpenAI is implemented server-side with strict event-tuple validation, persistent attempt quotas and explicit generation controls. **The hosted demo uses deterministic fallback; no live model invocation has been verified.** The owner opted for no new model costs. See [the upgrade audit](docs/genai-upgrade-audit.md) and [grounding design](docs/llm-grounding.md).
 
