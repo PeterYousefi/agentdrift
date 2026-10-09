@@ -1,6 +1,6 @@
 targetScope = 'resourceGroup'
 param location string = resourceGroup().location
-param staticLocation string = 'eastus2'
+param frontendName string = 'peter-yousefi-agentdrift-demo'
 param suffix string = uniqueString(resourceGroup().id)
 param image string = 'ghcr.io/peteryousefi/agentdrift:latest'
 param alertEmail string = 'peter.yousefi@outlook.com'
@@ -41,11 +41,27 @@ resource tableRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')
   }
 }
-resource frontend 'Microsoft.Web/staticSites@2023-12-01' = {
-  name: 'agentdrift-web'
-  location: staticLocation
-  sku: { name: 'Free', tier: 'Free' }
-  properties: { allowConfigFileUpdates: true }
+// Free IIS static hosting gives a readable azurewebsites.net hostname without a purchased domain.
+resource frontendPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
+  name: 'agentdrift-frontend-free'
+  location: location
+  sku: { name: 'F1', tier: 'Free', capacity: 1 }
+  properties: { reserved: false }
+}
+resource frontend 'Microsoft.Web/sites@2023-12-01' = {
+  name: frontendName
+  location: location
+  kind: 'app'
+  properties: {
+    serverFarmId: frontendPlan.id
+    httpsOnly: true
+    siteConfig: {
+      alwaysOn: false
+      ftpsState: 'Disabled'
+      minTlsVersion: '1.2'
+      appSettings: [{ name: 'SCM_DO_BUILD_DURING_DEPLOYMENT', value: 'false' }]
+    }
+  }
 }
 resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: 'agentdrift-environment'

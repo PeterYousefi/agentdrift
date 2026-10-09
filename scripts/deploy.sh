@@ -16,16 +16,16 @@ az deployment group create --resource-group "$rg_name" --name agentdrift-foundat
 az deployment group create --resource-group "$rg_name" --name agentdrift-runtime \
   --template-file infra/azure/main.bicep --parameters deployApi=true image="$image" --output none
 api_host=$(az containerapp show -g "$rg_name" -n agentdrift-api --query properties.configuration.ingress.fqdn -o tsv)
-web_host=$(az staticwebapp show -g "$rg_name" -n agentdrift-web --query defaultHostname -o tsv)
+web_name=${FRONTEND_NAME:-peter-yousefi-agentdrift-demo}
+web_host=$(az webapp show -g "$rg_name" -n "$web_name" --query defaultHostName -o tsv)
 (
   cd lovable
   VITE_DEMO_MODE=false VITE_API_BASE_URL="https://$api_host/api/v1" npm run build
 )
 cp lovable/.output/public/_shell.html lovable/.output/public/index.html
-# The Static Web Apps deployment token stays in process memory, never a tracked file.
-swa_token=$(az staticwebapp secrets list -g "$rg_name" -n agentdrift-web --query properties.apiKey -o tsv)
-SWA_CLI_DEPLOYMENT_TOKEN="$swa_token" npx --yes @azure/static-web-apps-cli deploy lovable/.output/public --env production
-unset swa_token
+cp infra/azure/web.config lovable/.output/public/web.config
+python3 scripts/package_frontend.py
+az webapp deploy -g "$rg_name" -n "$web_name" --type zip --src-path /tmp/agentdrift-frontend.zip --clean true --restart true --output none
 curl --fail --retry 12 --retry-delay 10 "https://$api_host/health"
 curl --fail --retry 12 --retry-delay 10 "https://$api_host/ready"
 (cd lovable && E2E_BASE_URL="https://$web_host" npx playwright test)

@@ -10,7 +10,7 @@ AI-agent metadata movement investigation with Python behavioral detection, linke
 
 The existing Lovable UI is preserved: React 19, TanStack Start/Router/Query, React Flow, Tailwind and Radix. FastAPI/Pydantic provides six deterministic scenarios, historical baselines, robust volume/novelty rules, temporal correlation, persisted cases, citation-validated reports and audited simulation. SQLite supports local development; Azure Table Storage and managed identity are prepared for production. Azure OpenAI is optional; fallback reports explicitly say no LLM inference was used.
 
-**Deployment status:** Azure cost approval and public verification pending. No Azure demo URL is claimed. [Repository](https://github.com/PeterYousefi/agentdrift) · [Architecture](docs/architecture.md) · [Deployment and preflight price detail](docs/azure-deployment.md).
+**Deployment status:** Azure cost review received; provisioning and public verification in progress. No Azure demo URL is claimed. [Repository](https://github.com/PeterYousefi/agentdrift) · [Architecture](docs/architecture.md) · [Deployment and preflight price detail](docs/azure-deployment.md).
 
 ## Local demo
 
