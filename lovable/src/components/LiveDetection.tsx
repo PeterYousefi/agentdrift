@@ -30,6 +30,13 @@ type Evaluation = {
     falseAlertsPerSyntheticBenignHour: number;
     meanDetectedPositiveDelaySeconds: number;
   };
+  launchEvaluation?: {
+    combined: NonNullable<Evaluation["expandedEvaluation"]>;
+    combinedBefore: NonNullable<Evaluation["expandedEvaluation"]>;
+    heldOut: NonNullable<Evaluation["expandedEvaluation"]>;
+    stress: NonNullable<Evaluation["expandedEvaluation"]>;
+    regressionBefore: NonNullable<Evaluation["expandedEvaluation"]>;
+  };
   runs: number;
   detector: string;
   dataset: string;
@@ -49,7 +56,8 @@ export function LiveDetection() {
     queryKey: ["evaluation"],
     queryFn: () => liveRequest<Evaluation>("/detection/evaluation"),
   });
-  const expanded = result.data?.expandedEvaluation;
+  const launch = result.data?.launchEvaluation;
+  const expanded = launch?.combined ?? result.data?.expandedEvaluation;
   const active = mode === "expanded" && expanded ? expanded.investigation : result.data;
   const scenarios = mode === "expanded" && expanded ? expanded.byScenario : result.data?.byScenario;
   return (
@@ -69,7 +77,7 @@ export function LiveDetection() {
               className="rounded border border-border px-3 py-2 text-sm"
               onClick={() => setMode("expanded")}
             >
-              Challenging evaluation · 260 runs
+              {launch ? "Launch held-out" : "Challenging evaluation"} · {expanded?.runs ?? 260} runs
             </button>
             <button
               aria-pressed={mode === "baseline"}
@@ -143,6 +151,41 @@ export function LiveDetection() {
                 {expanded.meanDetectedPositiveDelaySeconds.toFixed(1)} simulated seconds; misses are
                 excluded from this delay.
               </p>
+              {launch && (
+                <table className="w-full text-sm mb-4">
+                  <caption className="text-left">
+                    Measured comparison · subsets are not interchangeable
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th className="text-left">Dataset / rules</th>
+                      <th>Precision</th>
+                      <th>Recall</th>
+                      <th>FPR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ["Old 260 regression / 1.1", launch.regressionBefore],
+                      ["Old 260 regression / 1.2", result.data.expandedEvaluation!],
+                      ["Fresh 260 challenge / 1.2", launch.heldOut],
+                      ["Fresh 120 ambiguity probes / 1.2", launch.stress],
+                      ["Combined 380 / 1.1", launch.combinedBefore],
+                      ["Combined 380 / 1.2", launch.combined],
+                    ].map(([label, evaluation]) => {
+                      const value = evaluation as NonNullable<Evaluation["expandedEvaluation"]>;
+                      return (
+                        <tr key={label as string}>
+                          <td>{label as string}</td>
+                          <td>{(value.investigation.precision * 100).toFixed(1)}%</td>
+                          <td>{(value.investigation.recall * 100).toFixed(1)}%</td>
+                          <td>{(value.investigation.falsePositiveRate * 100).toFixed(1)}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
               <table className="w-full text-sm mb-4">
                 <thead>
                   <tr>

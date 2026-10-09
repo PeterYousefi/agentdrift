@@ -128,8 +128,8 @@ test("baseline route shows actual training span", async ({ page }) => {
 
 test("Detection Lab distinguishes harder results from the core regression", async ({ page }) => {
   await page.goto("/detection");
-  await expect(page.getByText(/13 frozen challenge structures/)).toBeVisible();
-  await expect(page.getByText("80.0%", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/19 pre-registered structures/)).toBeVisible();
+  await expect(page.getByText("71.4%", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("alwaysReview", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Core regression · 120 runs" }).click();
   await expect(page.getByText("100.0%", { exact: true })).toHaveCount(3);
