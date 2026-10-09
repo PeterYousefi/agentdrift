@@ -1,6 +1,11 @@
 name: Deploy approved Azure environment
 on:
   workflow_dispatch:
+    inputs:
+      image_sha:
+        description: Verified 40-character commit SHA of the published backend image
+        required: true
+        type: string
 permissions:
   contents: read
   id-token: write
@@ -23,6 +28,12 @@ jobs:
         working-directory: lovable
       - run: npx playwright install --with-deps chromium
         working-directory: lovable
+      - name: Validate immutable image tag
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
+        run: '[[ "$IMAGE_SHA" =~ ^[0-9a-f]{40}$ ]]'
       - run: bash scripts/deploy.sh
         env:
           ALLOW_AZURE_DEPLOY: 'true'
+          UPDATE_EXISTING_ONLY: 'true'
+          AGENTDRIFT_IMAGE: ghcr.io/peteryousefi/agentdrift:${{ inputs.image_sha }}

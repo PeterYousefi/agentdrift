@@ -8,6 +8,12 @@ web_name=${FRONTEND_NAME:-agentdrift-personal-demo}
 image=${AGENTDRIFT_IMAGE:-ghcr.io/peteryousefi/agentdrift:latest}
 # Validate public pull access before any provisioning.
 docker manifest inspect "$image" >/dev/null
+if [[ "${UPDATE_EXISTING_ONLY:-false}" == true ]]; then
+  # Fail closed if either approved application is absent; never provision on this path.
+  az webapp show -g "$rg_name" -n "$web_name" --output none
+  az containerapp show -g "$rg_name" -n agentdrift-api --output none
+  az containerapp update -g "$rg_name" -n agentdrift-api --image "$image" --output none
+else
 az deployment sub create --location "$region" --name agentdrift-subscription-budget \
   --template-file infra/azure/subscription-budget.bicep --output none
 az group create --name "$rg_name" --location "$region" --output none
@@ -16,6 +22,7 @@ az deployment group create --resource-group "$rg_name" --name agentdrift-foundat
   --template-file infra/azure/main.bicep --parameters deployApi=false frontendName="$web_name" --output none
 az deployment group create --resource-group "$rg_name" --name agentdrift-runtime \
   --template-file infra/azure/main.bicep --parameters deployApi=true image="$image" frontendName="$web_name" --output none
+fi
 api_host=$(az containerapp show -g "$rg_name" -n agentdrift-api --query properties.configuration.ingress.fqdn -o tsv)
 web_host=$(az webapp show -g "$rg_name" -n "$web_name" --query defaultHostName -o tsv)
 (
