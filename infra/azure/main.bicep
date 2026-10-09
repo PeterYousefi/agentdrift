@@ -66,7 +66,7 @@ resource frontend 'Microsoft.Web/sites@2023-12-01' = {
 resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: 'agentdrift-environment'
   location: location
-  properties: { appLogsConfiguration: { destination: 'azure-monitor' } }
+  properties: {}
 }
 resource api 'Microsoft.App/containerApps@2024-03-01' = if (deployApi) {
   name: 'agentdrift-api'
