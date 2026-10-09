@@ -2,17 +2,43 @@ import { z } from "zod";
 import type { AgentDriftApi } from "./contract";
 import { AgentSchema, InvestigationSchema, MovementEventSchema } from "@/types";
 
+let sessionPromise: Promise<string> | undefined;
+
 /**
  * HTTP adapter for the future FastAPI backend. Paths are the proposed contract.
  * No credentials are held in the browser — the backend owns all cloud/service secrets.
  */
-export function createHttpAdapter(baseUrl: string): AgentDriftApi {
+export function createHttpAdapter(
+  baseUrl: string,
+): AgentDriftApi & { request<T>(path: string, init?: RequestInit): Promise<T> } {
   const base = baseUrl.replace(/\/$/, "");
+
+  async function session(): Promise<string> {
+    if (typeof window === "undefined") throw new Error("Live API requires the browser session");
+    const saved = sessionStorage.getItem("agentdrift-session");
+    if (saved) return saved;
+    sessionPromise ??= fetch(`${base}/sessions`, { method: "POST" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Unable to create demo session");
+        const token = z.object({ token: z.string().min(40) }).parse(await response.json()).token;
+        sessionStorage.setItem("agentdrift-session", token);
+        return token;
+      })
+      .catch((error) => {
+        sessionPromise = undefined;
+        throw error;
+      });
+    return sessionPromise;
+  }
 
   async function req<T>(path: string, schema: z.ZodType<T> | null, init?: RequestInit): Promise<T> {
     const res = await fetch(`${base}${path}`, {
       ...init,
-      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Demo-Session": await session(),
+        ...(init?.headers ?? {}),
+      },
     });
     if (!res.ok) throw new Error(`AgentDrift API ${res.status} on ${path}`);
     const json = res.status === 204 ? null : await res.json();
@@ -24,6 +50,7 @@ export function createHttpAdapter(baseUrl: string): AgentDriftApi {
 
   return {
     mode: "http",
+    request: <T>(path: string, init?: RequestInit) => req<T>(path, null, init),
     getOverview: (signal) => get("/overview", null, signal),
     getAgents: (signal) => get("/agents", z.array(AgentSchema), signal),
     getAgent: (id, signal) => get(`/agents/${encodeURIComponent(id)}`, AgentSchema, signal),

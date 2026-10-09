@@ -5,10 +5,11 @@ import { createHttpAdapter } from "./http-adapter";
 import type { MovementFilters } from "@/types";
 
 const BASE = import.meta.env.VITE_API_BASE_URL as string | undefined;
-const DEMO = (import.meta.env.VITE_DEMO_MODE as string | undefined) ?? "true";
+const DEMO = (import.meta.env.VITE_DEMO_MODE as string | undefined) ?? "false";
 
 /** Demo mode is the default. Live mode requires VITE_DEMO_MODE=false and VITE_API_BASE_URL. */
-export const api: AgentDriftApi = DEMO !== "false" || !BASE ? mockAdapter : createHttpAdapter(BASE);
+export const api: AgentDriftApi =
+  DEMO === "true" ? mockAdapter : createHttpAdapter(BASE ?? "http://localhost:8000/api/v1");
 export const isDemoMode = api.mode === "mock";
 
 export const q = {
@@ -58,3 +59,7 @@ export const q = {
 };
 
 export type { AgentDriftApi };
+
+const httpClient = createHttpAdapter(BASE ?? "http://localhost:8000/api/v1");
+export const liveRequest = <T>(path: string, init?: RequestInit) =>
+  httpClient.request<T>(path, init);

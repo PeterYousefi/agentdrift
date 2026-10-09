@@ -1,3 +1,5 @@
+import { isDemoMode } from "@/api";
+import { LivePlayground } from "@/components/LivePlayground";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Pause, Play, RotateCcw, BellRing } from "lucide-react";
@@ -37,7 +39,7 @@ export const Route = createFileRoute("/playground")({
       "Scenario playground",
       "Replay deterministic synthetic scenarios and watch the behavioral detector respond in real time.",
     ),
-  component: Playground,
+  component: () => (isDemoMode ? <Playground /> : <LivePlayground />),
 });
 
 function Playground() {
