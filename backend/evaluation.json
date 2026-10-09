@@ -1,26 +1,26 @@
 {
   "dataset": "held-out synthetic scenario seeds 100\u2013119; training seed 7",
-  "detector": "rules-1.0",
+  "detector": "rules-1.1",
   "runs": 120,
   "confusionMatrix": {
     "tp": 80,
-    "fp": 20,
-    "tn": 20,
+    "fp": 0,
+    "tn": 40,
     "fn": 0
   },
-  "precision": 0.8,
+  "precision": 1.0,
   "recall": 1.0,
-  "f1": 0.888888888888889,
-  "falsePositiveRate": 0.5,
+  "f1": 1.0,
+  "falsePositiveRate": 0.0,
   "meanDetectionLatencySeconds": 169.0,
-  "meanProcessingMs": 0.040128333333333335,
+  "meanProcessingMs": 0.0349075,
   "eventToAlertLatency": "Not measured over a deployed transport; processing_ms measures synchronous detector only.",
   "mlComparison": "Not implemented; no claim of ML superiority.",
   "limitations": [
     "Synthetic benchmarks do not establish real-world effectiveness.",
     "Scenario structure repeats across seeds; statistical confidence is limited.",
     "Background check covers independent normal-agent traffic, not adversarial mixed correlations.",
-    "Novel approved endpoint deliberately produces false-positive pressure."
+    "Approval policy is explicit server configuration; synthetic endpoint distinction limits generalization."
   ],
   "byScenario": {
     "normal": {
@@ -45,7 +45,7 @@
     },
     "benign-unusual": {
       "runs": 20,
-      "alerts": 20
+      "alerts": 0
     }
   },
   "results": [
@@ -56,7 +56,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.5548
+      "processing_ms": 0.0489
     },
     {
       "scenario": "spike",
@@ -65,7 +65,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.021
+      "processing_ms": 0.0228
     },
     {
       "scenario": "novel-endpoint",
@@ -74,7 +74,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.019
+      "processing_ms": 0.0212
     },
     {
       "scenario": "read-then-send",
@@ -83,7 +83,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0247
+      "processing_ms": 0.0243
     },
     {
       "scenario": "low-and-slow",
@@ -92,16 +92,16 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1402
+      "processing_ms": 0.1262
     },
     {
       "scenario": "benign-unusual",
       "seed": 100,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.016
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0161
     },
     {
       "scenario": "normal",
@@ -119,7 +119,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0168
+      "processing_ms": 0.0162
     },
     {
       "scenario": "novel-endpoint",
@@ -127,44 +127,44 @@
       "ground_truth": true,
       "predicted": true,
       "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0152
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 101,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0195
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 101,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1267
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 101,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
       "detection_latency_seconds": 4.0,
       "processing_ms": 0.0154
     },
     {
+      "scenario": "read-then-send",
+      "seed": 101,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0197
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 101,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1219
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 101,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0152
+    },
+    {
       "scenario": "normal",
       "seed": 102,
       "ground_truth": false,
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.015
+      "processing_ms": 0.0147
     },
     {
       "scenario": "spike",
@@ -173,7 +173,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0163
+      "processing_ms": 0.0166
     },
     {
       "scenario": "novel-endpoint",
@@ -182,7 +182,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0146
+      "processing_ms": 0.0149
     },
     {
       "scenario": "read-then-send",
@@ -191,7 +191,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0198
+      "processing_ms": 0.0187
     },
     {
       "scenario": "low-and-slow",
@@ -200,16 +200,16 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1274
+      "processing_ms": 0.1243
     },
     {
       "scenario": "benign-unusual",
       "seed": 102,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.016
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0155
     },
     {
       "scenario": "normal",
@@ -218,7 +218,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.016
+      "processing_ms": 0.0146
     },
     {
       "scenario": "spike",
@@ -227,7 +227,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.018
+      "processing_ms": 0.0173
     },
     {
       "scenario": "novel-endpoint",
@@ -245,389 +245,11 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0191
+      "processing_ms": 0.0193
     },
     {
       "scenario": "low-and-slow",
       "seed": 103,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.127
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 103,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0154
-    },
-    {
-      "scenario": "normal",
-      "seed": 104,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0146
-    },
-    {
-      "scenario": "spike",
-      "seed": 104,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0166
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 104,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0146
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 104,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0195
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 104,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1292
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 104,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0158
-    },
-    {
-      "scenario": "normal",
-      "seed": 105,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0147
-    },
-    {
-      "scenario": "spike",
-      "seed": 105,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0173
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 105,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.015
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 105,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0191
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 105,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.156
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 105,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0184
-    },
-    {
-      "scenario": "normal",
-      "seed": 106,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0158
-    },
-    {
-      "scenario": "spike",
-      "seed": 106,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.019
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 106,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0145
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 106,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.021
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 106,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1278
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 106,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0165
-    },
-    {
-      "scenario": "normal",
-      "seed": 107,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0153
-    },
-    {
-      "scenario": "spike",
-      "seed": 107,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0178
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 107,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0159
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 107,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0186
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 107,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1372
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 107,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0157
-    },
-    {
-      "scenario": "normal",
-      "seed": 108,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0156
-    },
-    {
-      "scenario": "spike",
-      "seed": 108,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0168
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 108,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.015
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 108,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.019
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 108,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1314
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 108,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0159
-    },
-    {
-      "scenario": "normal",
-      "seed": 109,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0148
-    },
-    {
-      "scenario": "spike",
-      "seed": 109,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0165
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 109,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0148
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 109,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0195
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 109,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1315
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 109,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0157
-    },
-    {
-      "scenario": "normal",
-      "seed": 110,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0148
-    },
-    {
-      "scenario": "spike",
-      "seed": 110,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.018
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 110,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0151
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 110,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0187
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 110,
       "ground_truth": true,
       "predicted": true,
       "score": 68.861,
@@ -636,12 +258,390 @@
     },
     {
       "scenario": "benign-unusual",
+      "seed": 103,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0159
+    },
+    {
+      "scenario": "normal",
+      "seed": 104,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0144
+    },
+    {
+      "scenario": "spike",
+      "seed": 104,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0215
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 104,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0158
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 104,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.019
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 104,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1237
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 104,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0155
+    },
+    {
+      "scenario": "normal",
+      "seed": 105,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0143
+    },
+    {
+      "scenario": "spike",
+      "seed": 105,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0165
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 105,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0145
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 105,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0181
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 105,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1246
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 105,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.016
+    },
+    {
+      "scenario": "normal",
+      "seed": 106,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0142
+    },
+    {
+      "scenario": "spike",
+      "seed": 106,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0167
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 106,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0148
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 106,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0182
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 106,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1242
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 106,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.015
+    },
+    {
+      "scenario": "normal",
+      "seed": 107,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.014
+    },
+    {
+      "scenario": "spike",
+      "seed": 107,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.016
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 107,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0151
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 107,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0179
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 107,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1241
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 107,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0153
+    },
+    {
+      "scenario": "normal",
+      "seed": 108,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.014
+    },
+    {
+      "scenario": "spike",
+      "seed": 108,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0162
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 108,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0145
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 108,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0187
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 108,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1241
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 108,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0152
+    },
+    {
+      "scenario": "normal",
+      "seed": 109,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0143
+    },
+    {
+      "scenario": "spike",
+      "seed": 109,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0167
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 109,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0145
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 109,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0182
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 109,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1236
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 109,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0161
+    },
+    {
+      "scenario": "normal",
       "seed": 110,
       "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.014
+    },
+    {
+      "scenario": "spike",
+      "seed": 110,
+      "ground_truth": true,
       "predicted": true,
-      "score": 55.824,
+      "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0157
+      "processing_ms": 0.016
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 110,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0149
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 110,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0184
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 110,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1235
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 110,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0158
     },
     {
       "scenario": "normal",
@@ -650,7 +650,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0148
+      "processing_ms": 0.0141
     },
     {
       "scenario": "spike",
@@ -659,7 +659,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0163
+      "processing_ms": 0.016
     },
     {
       "scenario": "novel-endpoint",
@@ -668,7 +668,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0143
+      "processing_ms": 0.0144
     },
     {
       "scenario": "read-then-send",
@@ -686,16 +686,16 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1287
+      "processing_ms": 0.124
     },
     {
       "scenario": "benign-unusual",
       "seed": 111,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0156
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0152
     },
     {
       "scenario": "normal",
@@ -704,7 +704,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0147
+      "processing_ms": 0.0142
     },
     {
       "scenario": "spike",
@@ -713,7 +713,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0166
+      "processing_ms": 0.0158
     },
     {
       "scenario": "novel-endpoint",
@@ -722,7 +722,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0146
+      "processing_ms": 0.0151
     },
     {
       "scenario": "read-then-send",
@@ -731,7 +731,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0235
+      "processing_ms": 0.0181
     },
     {
       "scenario": "low-and-slow",
@@ -740,15 +740,15 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1264
+      "processing_ms": 0.1239
     },
     {
       "scenario": "benign-unusual",
       "seed": 112,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
       "processing_ms": 0.0151
     },
     {
@@ -758,7 +758,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0141
+      "processing_ms": 0.0144
     },
     {
       "scenario": "spike",
@@ -767,7 +767,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0158
+      "processing_ms": 0.016
     },
     {
       "scenario": "novel-endpoint",
@@ -776,7 +776,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.014
+      "processing_ms": 0.0147
     },
     {
       "scenario": "read-then-send",
@@ -785,7 +785,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0189
+      "processing_ms": 0.0193
     },
     {
       "scenario": "low-and-slow",
@@ -794,15 +794,15 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1247
+      "processing_ms": 0.1241
     },
     {
       "scenario": "benign-unusual",
       "seed": 113,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
       "processing_ms": 0.0154
     },
     {
@@ -812,7 +812,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0145
+      "processing_ms": 0.014
     },
     {
       "scenario": "spike",
@@ -821,7 +821,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.016
+      "processing_ms": 0.0163
     },
     {
       "scenario": "novel-endpoint",
@@ -830,7 +830,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0143
+      "processing_ms": 0.0146
     },
     {
       "scenario": "read-then-send",
@@ -839,7 +839,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0178
+      "processing_ms": 0.0193
     },
     {
       "scenario": "low-and-slow",
@@ -848,137 +848,29 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.139
+      "processing_ms": 0.1235
     },
     {
       "scenario": "benign-unusual",
       "seed": 114,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0148
-    },
-    {
-      "scenario": "normal",
-      "seed": 115,
       "ground_truth": false,
       "predicted": false,
-      "score": 0.0,
+      "score": 20.824,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0143
-    },
-    {
-      "scenario": "spike",
-      "seed": 115,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0162
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 115,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0143
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 115,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.018
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 115,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1245
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 115,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0151
-    },
-    {
-      "scenario": "normal",
-      "seed": 116,
-      "ground_truth": false,
-      "predicted": false,
-      "score": 0.0,
-      "detection_latency_seconds": null,
-      "processing_ms": 0.0144
-    },
-    {
-      "scenario": "spike",
-      "seed": 116,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 59.998,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0162
-    },
-    {
-      "scenario": "novel-endpoint",
-      "seed": 116,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 35.0,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0145
-    },
-    {
-      "scenario": "read-then-send",
-      "seed": 116,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 100.0,
-      "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0186
-    },
-    {
-      "scenario": "low-and-slow",
-      "seed": 116,
-      "ground_truth": true,
-      "predicted": true,
-      "score": 68.861,
-      "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1244
-    },
-    {
-      "scenario": "benign-unusual",
-      "seed": 116,
-      "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
       "processing_ms": 0.0153
     },
     {
       "scenario": "normal",
-      "seed": 117,
+      "seed": 115,
       "ground_truth": false,
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0148
+      "processing_ms": 0.0138
     },
     {
       "scenario": "spike",
-      "seed": 117,
+      "seed": 115,
       "ground_truth": true,
       "predicted": true,
       "score": 59.998,
@@ -987,12 +879,120 @@
     },
     {
       "scenario": "novel-endpoint",
+      "seed": 115,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0157
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 115,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.042
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 115,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1431
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 115,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0166
+    },
+    {
+      "scenario": "normal",
+      "seed": 116,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0154
+    },
+    {
+      "scenario": "spike",
+      "seed": 116,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0173
+    },
+    {
+      "scenario": "novel-endpoint",
+      "seed": 116,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 35.0,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.016
+    },
+    {
+      "scenario": "read-then-send",
+      "seed": 116,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 100.0,
+      "detection_latency_seconds": 8.0,
+      "processing_ms": 0.0198
+    },
+    {
+      "scenario": "low-and-slow",
+      "seed": 116,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 68.861,
+      "detection_latency_seconds": 660.0,
+      "processing_ms": 0.1215
+    },
+    {
+      "scenario": "benign-unusual",
+      "seed": 116,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0157
+    },
+    {
+      "scenario": "normal",
+      "seed": 117,
+      "ground_truth": false,
+      "predicted": false,
+      "score": 0.0,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0139
+    },
+    {
+      "scenario": "spike",
+      "seed": 117,
+      "ground_truth": true,
+      "predicted": true,
+      "score": 59.998,
+      "detection_latency_seconds": 4.0,
+      "processing_ms": 0.0163
+    },
+    {
+      "scenario": "novel-endpoint",
       "seed": 117,
       "ground_truth": true,
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0185
+      "processing_ms": 0.0147
     },
     {
       "scenario": "read-then-send",
@@ -1001,7 +1001,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0199
+      "processing_ms": 0.0182
     },
     {
       "scenario": "low-and-slow",
@@ -1010,15 +1010,15 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1296
+      "processing_ms": 0.1217
     },
     {
       "scenario": "benign-unusual",
       "seed": 117,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
       "processing_ms": 0.0151
     },
     {
@@ -1028,7 +1028,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0143
+      "processing_ms": 0.0141
     },
     {
       "scenario": "spike",
@@ -1046,7 +1046,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0144
+      "processing_ms": 0.0145
     },
     {
       "scenario": "read-then-send",
@@ -1055,7 +1055,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0182
+      "processing_ms": 0.0183
     },
     {
       "scenario": "low-and-slow",
@@ -1064,15 +1064,15 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1258
+      "processing_ms": 0.1212
     },
     {
       "scenario": "benign-unusual",
       "seed": 118,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
       "processing_ms": 0.0152
     },
     {
@@ -1082,7 +1082,7 @@
       "predicted": false,
       "score": 0.0,
       "detection_latency_seconds": null,
-      "processing_ms": 0.0146
+      "processing_ms": 0.014
     },
     {
       "scenario": "spike",
@@ -1091,7 +1091,7 @@
       "predicted": true,
       "score": 59.998,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0161
+      "processing_ms": 0.0158
     },
     {
       "scenario": "novel-endpoint",
@@ -1100,7 +1100,7 @@
       "predicted": true,
       "score": 35.0,
       "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0142
+      "processing_ms": 0.0144
     },
     {
       "scenario": "read-then-send",
@@ -1109,7 +1109,7 @@
       "predicted": true,
       "score": 100.0,
       "detection_latency_seconds": 8.0,
-      "processing_ms": 0.0185
+      "processing_ms": 0.0183
     },
     {
       "scenario": "low-and-slow",
@@ -1118,16 +1118,16 @@
       "predicted": true,
       "score": 68.861,
       "detection_latency_seconds": 660.0,
-      "processing_ms": 0.1281
+      "processing_ms": 0.1214
     },
     {
       "scenario": "benign-unusual",
       "seed": 119,
       "ground_truth": false,
-      "predicted": true,
-      "score": 55.824,
-      "detection_latency_seconds": 4.0,
-      "processing_ms": 0.0149
+      "predicted": false,
+      "score": 20.824,
+      "detection_latency_seconds": null,
+      "processing_ms": 0.0154
     }
   ]
 }

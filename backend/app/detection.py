@@ -6,7 +6,9 @@ from statistics import median
 
 from app.models import BehaviorBaseline, DetectionFinding, Operation, Severity
 
-VERSION = "rules-1.0"
+VERSION = "rules-1.1"
+# Trusted server policy, independent of scenario labels and untrusted event metadata.
+APPROVED_DESTINATIONS = {"ag-07": frozenset({"dst:approved-reporting"})}
 WINDOW = 300
 
 
@@ -103,6 +105,13 @@ def extract(events, baseline):
         "robust_deviation": max(0, (peak - baseline.typical_outbound_bytes) / baseline.outbound_variability),
         "destination_novelty": len({e.destination_id for e in novel_dest}),
         "resource_novelty": len({e.resource_id for e in novel_resources}),
+        "unapproved_destination_novelty": len(
+            {
+                e.destination_id
+                for e in novel_dest
+                if e.destination_id not in APPROVED_DESTINATIONS.get(baseline.agent_id, frozenset())
+            }
+        ),
         "sensitivity_weighted_bytes": sum(
             e.bytes_transferred * (3 if e.source_class == "restricted" else 1) for e in reads
         ),
@@ -135,7 +144,7 @@ def detect(events, baseline):
     # A volume-only event can merit review; a complete linked sequence is more severe.
     contributions = {
         "VOLUME_DEVIATION": volume * 60,
-        "NOVEL_DESTINATION": min(1, f["destination_novelty"]) * 35,
+        "NOVEL_DESTINATION": min(1, f["unapproved_destination_novelty"]) * 35,
         "NOVEL_RESOURCE": min(1, f["resource_novelty"]) * 10,
         "RESTRICTED_STAGE_SEND": bool(f["sequence_event_ids"]) * 50,
         "CUMULATIVE_DRIFT": cumulative * 65,

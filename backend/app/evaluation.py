@@ -4,7 +4,7 @@ import json
 import time
 from pathlib import Path
 
-from app.detection import build_baseline, detect
+from app.detection import VERSION, build_baseline, detect
 from app.scenarios import CATALOG, generate, historical_events
 
 
@@ -53,7 +53,7 @@ def evaluate(seeds=range(100, 120)):
     recall = tp / max(1, tp + fn)
     return {
         "dataset": "held-out synthetic scenario seeds 100–119; training seed 7",
-        "detector": "rules-1.0",
+        "detector": VERSION,
         "runs": len(rows),
         "confusionMatrix": counts,
         "precision": precision,
@@ -68,7 +68,7 @@ def evaluate(seeds=range(100, 120)):
             "Synthetic benchmarks do not establish real-world effectiveness.",
             "Scenario structure repeats across seeds; statistical confidence is limited.",
             "Background check covers independent normal-agent traffic, not adversarial mixed correlations.",
-            "Novel approved endpoint deliberately produces false-positive pressure.",
+            "Approval policy is explicit server configuration; synthetic endpoint distinction limits generalization.",
         ],
         "byScenario": {
             sid: {

@@ -38,11 +38,38 @@ def test_low_and_slow_and_benign_pressure():
     assert "CUMULATIVE_DRIFT" in result.explanation_codes
     assert result.anomaly_score >= 30
     benign = detect(generate("benign-unusual", "r"), baseline())
-    # Deliberate false-positive pressure: novelty is reviewable even when ground truth is benign.
-    assert benign.severity != Severity.NORMAL
+    # Approved novelty remains visible without automatically opening a case.
+    assert benign.severity == Severity.NORMAL
 
 
 def test_input_changes_score():
     events = generate("spike", "r")
     smaller = [e.model_copy(update={"bytes_transferred": 1}) for e in events]
     assert detect(smaller, baseline()).anomaly_score < detect(events, baseline()).anomaly_score
+
+
+def test_approved_reporting_policy_preserves_novelty_and_real_alerts():
+    benign = generate("benign-unusual", "approved")
+    finding = detect(benign, baseline())
+    assert finding.feature_values["destination_novelty"] == 1
+    assert finding.severity == Severity.NORMAL
+    assert finding.feature_values["unapproved_destination_novelty"] == 0
+    large = [
+        e.model_copy(update={"bytes_transferred": 950 * 1024 * 1024}) if e.operation == "SEND" else e
+        for e in benign
+    ]
+    assert detect(large, baseline()).anomaly_score >= 30
+    sensitive = [
+        e.model_copy(update={"destination_id": "dst:approved-reporting"}) if e.destination_id else e
+        for e in generate("read-then-send", "sensitive")
+    ]
+    assert "RESTRICTED_STAGE_SEND" in detect(sensitive, baseline()).explanation_codes
+    assert detect(sensitive, baseline()).anomaly_score >= 80
+
+
+def test_untrusted_metadata_cannot_approve_destination():
+    events = [
+        e.model_copy(update={"metadata": {"approved": True}, "destination_class": "approved-model"})
+        for e in generate("novel-endpoint", "forged")
+    ]
+    assert detect(events, baseline()).severity == Severity.REVIEW
