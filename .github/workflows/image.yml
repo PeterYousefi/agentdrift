@@ -1,0 +1,28 @@
+name: Publish image
+on:
+  workflow_dispatch:
+  push:
+    paths: ['backend/**', '.github/workflows/image.yml']
+permissions:
+  contents: read
+  packages: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e './backend[test]' && pytest backend/tests -q
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          tags: ghcr.io/peteryousefi/agentdrift:${{ github.sha }},ghcr.io/peteryousefi/agentdrift:latest
+          labels: org.opencontainers.image.source=https://github.com/PeterYousefi/agentdrift
