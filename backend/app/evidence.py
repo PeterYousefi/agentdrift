@@ -1,5 +1,19 @@
 from app.detection import ordered
 
+LABELS = {
+    "ag-07": "Research Agent 07",
+    "res:research-features": "Research feature dataset",
+    "res:restricted-positions": "Restricted positions dataset",
+    "stage:temp-export": "Temporary export staging",
+    "dst:forecast-model": "Forecast model endpoint",
+    "dst:unknown-ext": "Unapproved external endpoint",
+    "dst:approved-reporting": "Approved reporting endpoint",
+}
+
+
+def readable_label(entity_id):
+    return LABELS.get(entity_id, entity_id.split(":")[-1].replace("-", " "))
+
 
 def ui_event(e, case_id=None, baseline=None):
     target = e.resource_id or e.destination_id
@@ -34,7 +48,7 @@ def graph(case_id, events, baseline):
             {
                 "id": agent,
                 "kind": "agent",
-                "label": agent,
+                "label": readable_label(agent),
                 "sub": "Synthetic agent",
                 "x": 0,
                 "y": 140 * len({row.agent_id for row in events[: events.index(e)]}),
@@ -48,11 +62,11 @@ def graph(case_id, events, baseline):
             nodes[target] = {
                 "id": target,
                 "kind": kind,
-                "label": target,
-                "sub": e.destination_class,
+                "label": readable_label(target),
+                "sub": target,
                 "novel": target not in known,
-                "x": 300 if e.resource_id else 600,
-                "y": 130 * sum(n["kind"] != "agent" for n in nodes.values()),
+                "x": -340 if e.operation == "READ" else 340 if e.resource_id else 680,
+                "y": 170 * sum(n["kind"] != "agent" for n in nodes.values()),
             }
         source, dest = (target, agent) if e.operation == "READ" else (agent, target)
         edges.append(
@@ -66,4 +80,13 @@ def graph(case_id, events, baseline):
                 "anomalous": target not in known,
             }
         )
-    return {"caseId": case_id, "nodes": list(nodes.values()), "edges": edges}
+    # One edge per operation/relationship, retaining every contributing persisted ID.
+    grouped = {}
+    for edge in edges:
+        key = (edge["source"], edge["target"], edge["op"])
+        if key in grouped:
+            grouped[key]["eventIds"].extend(edge["eventIds"])
+            grouped[key]["bytes"] += edge["bytes"]
+        else:
+            grouped[key] = edge
+    return {"caseId": case_id, "nodes": list(nodes.values()), "edges": list(grouped.values())}

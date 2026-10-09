@@ -51,6 +51,7 @@ type EdgeData = GraphEdgeSpec & {
   total: number;
   step?: number;
   quiet: boolean;
+  labelOffset: number;
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
   [k: string]: unknown;
@@ -101,10 +102,15 @@ const EntityNode = memo(function EntityNode({ data, selected }: NodeProps<Node<N
               </span>
             )}
           </div>
-          <div className="truncate text-[12.5px] font-semibold leading-tight text-foreground">
+          <div
+            title={data.label}
+            className="break-words text-[12.5px] font-semibold leading-tight text-foreground"
+          >
             {data.label}
           </div>
-          <div className="truncate font-mono text-[10.5px] text-muted-foreground">{data.sub}</div>
+          <div title={data.sub} className="truncate font-mono text-[10.5px] text-muted-foreground">
+            {data.sub}
+          </div>
         </div>
       </div>
     </div>
@@ -159,6 +165,8 @@ function FlowEdge({
             type="button"
             onMouseEnter={() => d.onHover(id)}
             onMouseLeave={() => d.onHover(null)}
+            onFocus={() => d.onHover(id)}
+            onBlur={() => d.onHover(null)}
             className={cn(
               "nodrag nopan pointer-events-auto absolute flex items-center gap-1 rounded-sm border bg-card px-1.5 py-0.5 font-mono text-[10px] font-medium shadow-panel transition-opacity",
               d.anomalous
@@ -168,7 +176,9 @@ function FlowEdge({
               hot && "ring-2 ring-primary/40",
               d.dim && "opacity-25",
             )}
-            style={{ transform: `translate(-50%, -50%) translate(${lx}px, ${ly}px)` }}
+            style={{
+              transform: `translate(-50%, -50%) translate(${lx}px, ${ly + d.labelOffset}px)`,
+            }}
             aria-label={`${d.anomalous ? `Anomalous step ${d.step}, ` : ""}${d.op} edge, ${d.eventIds.length} event${d.eventIds.length === 1 ? "" : "s"}${d.total ? `, ${fmtBytes(d.total)}` : ""}`}
             onClick={() => d.onSelect(id)}
           >
@@ -270,6 +280,7 @@ function Inner({
         type: "entity",
         position: { x: n.x, y: n.y },
         selected: n.id === selectedNodeId,
+        ariaLabel: `${n.kind}: ${n.label}. Select to inspect linked evidence.`,
         data: {
           ...n,
           onPath: pathNodes.has(n.id),
@@ -302,6 +313,14 @@ function Inner({
           markerEnd: { type: MarkerType.ArrowClosed, color, width: 16, height: 16 },
           data: {
             ...e,
+            labelOffset: (() => {
+              const parallel = graph.edges.filter(
+                (edge) => edge.source === e.source && edge.target === e.target,
+              );
+              return (
+                (parallel.findIndex((edge) => edge.id === e.id) - (parallel.length - 1) / 2) * 28
+              );
+            })(),
             total,
             step: steps[e.id],
             quiet: hasPath && !e.anomalous && !activeEdges?.has(e.id),
@@ -369,7 +388,7 @@ function Inner({
                 hovered.anomalous ? "text-danger" : "text-primary",
               )}
             >
-              {hovered.anomalous ? "anomalous" : "baseline-consistent"}
+              {hovered.anomalous ? "novel relationship" : "known relationship"}
             </span>
           </div>
           <div className="mt-1 text-[11px] leading-snug text-foreground">
@@ -404,7 +423,7 @@ function Inner({
       )}
       {hasPath && !compact && (
         <div className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-card/95 px-3 py-2 shadow-panel">
-          <div className="eyebrow mb-1">Anomalous path</div>
+          <div className="eyebrow mb-1">Novel relationships · intent unproven</div>
           <div className="flex items-center gap-1 font-mono text-[10.5px] text-danger">
             {graph.edges
               .filter((e) => steps[e.id])
@@ -451,7 +470,7 @@ export function GraphLegend() {
         <svg width="26" height="6" aria-hidden>
           <line x1="0" y1="3" x2="26" y2="3" stroke="var(--color-primary)" strokeWidth="1.5" />
         </svg>
-        Baseline-consistent
+        Known relationship
       </span>
       <span className="flex items-center gap-1.5">
         <svg width="26" height="6" aria-hidden>
@@ -465,14 +484,14 @@ export function GraphLegend() {
             strokeDasharray="8 4"
           />
         </svg>
-        Anomalous step (numbered)
+        Novel relationship (numbered)
       </span>
       <span className="flex items-center gap-1.5">
         <span
           className="h-3 w-3 rounded-sm border border-l-[3px] border-danger bg-card"
           aria-hidden
         />
-        On anomalous path
+        On novel relationship
       </span>
       <span className="flex items-center gap-1.5">
         <svg width="26" height="6" aria-hidden>
