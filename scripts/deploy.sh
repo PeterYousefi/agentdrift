@@ -4,7 +4,7 @@ set -euo pipefail
 [[ "$ALLOW_AZURE_DEPLOY" == true ]] || exit 1
 rg_name=agentdrift-demo-rg
 region=${AZURE_REGION:-canadacentral}
-web_name=${FRONTEND_NAME:-peter-yousefi-agentdrift-demo}
+web_name=${FRONTEND_NAME:-agentdrift-personal-demo}
 image=${AGENTDRIFT_IMAGE:-ghcr.io/peteryousefi/agentdrift:latest}
 # Validate public pull access before any provisioning.
 docker manifest inspect "$image" >/dev/null

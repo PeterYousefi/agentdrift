@@ -1,6 +1,6 @@
 targetScope = 'resourceGroup'
 param location string = resourceGroup().location
-param frontendName string = 'peter-yousefi-agentdrift-demo'
+param frontendName string = 'agentdrift-personal-demo'
 param suffix string = uniqueString(resourceGroup().id)
 param image string = 'ghcr.io/peteryousefi/agentdrift:latest'
 param alertEmail string = 'peter.yousefi@outlook.com'

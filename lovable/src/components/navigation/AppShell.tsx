@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="hidden border-t border-sidebar-border pt-3 text-[10.5px] leading-snug text-rail-foreground/60 lg:block">
-          Personal engineering demo by Peter Yousefi. All data is synthetic.
+          Personal engineering demo. All data is synthetic.
         </div>
       </aside>
 

@@ -20,7 +20,7 @@ export function LiveOverview() {
       <PageHeader
         eyebrow="Operations briefing"
         title="Every permission was valid. The sequence wasn't."
-        description="A personal engineering project by Peter Yousefi. AI-agent metadata investigation backed by Python behavioral detection; all activity is synthetic."
+        description="An independent personal engineering project. AI-agent metadata investigation backed by Python behavioral detection; all activity is synthetic."
         actions={<SyntheticBadge />}
       />
       {error && (
