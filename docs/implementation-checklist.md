@@ -12,7 +12,8 @@ Only checked items have been executed and verified. Each increment is committed 
 - [x] Grounded reports and Azure OpenAI adapter with tested deterministic fallback
 - [x] Human-approved simulated containment and audit
 - [x] Integrate existing Lovable pages and live playback
-- [ ] Azure cost review, Bicep and deployment
+- [x] Azure cost review and compiled Bicep; subscription $5 email budget created and verified
+- [ ] Cost approval and application provisioning
 - [x] GitHub CI and local browser tests
 - [ ] Azure deployment and public live verification
 - [x] Documentation, executed synthetic measurements and demo walkthrough

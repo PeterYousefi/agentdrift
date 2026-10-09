@@ -1,6 +1,6 @@
 # Deployment review — approval pending
 
-No AgentDrift Azure resources have been provisioned. Bicep compiles; image publishing and CI have passed. Anonymous pull access to ghcr.io/peteryousefi/agentdrift is verified. Existing unrelated Azure resources remain unchanged.
+No AgentDrift compute, storage or frontend resources have been provisioned. The requested subscription budget has been created and read back successfully: amount 5, Monthly, enabled actual and forecast thresholds at 100%, recipient peter.yousefi@outlook.com. Bicep compiles; image publishing and CI have passed. Anonymous pull access to ghcr.io/peteryousefi/agentdrift is verified. Existing unrelated Azure resources remain unchanged.
 
 ## Estimated monthly price before deployment
 
@@ -22,7 +22,7 @@ USD estimate for 1,000 short demo runs/month, at most 100 active backend hours, 
 
 Sources: [Container Apps billing](https://learn.microsoft.com/en-us/azure/container-apps/billing), [Static Web Apps plans](https://learn.microsoft.com/en-us/azure/static-web-apps/plans), [Table Storage pricing](https://azure.microsoft.com/en-us/pricing/details/storage/tables/), [GHCR access](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
 
-Budgets use the Azure subscription billing currency. Resource-group alerts email peter.yousefi@outlook.com at 20%, 60% and 100% of a monthly 5-unit budget and at a forecast 100%. A separate subscription-wide actual/forecast 5-unit alert also includes unrelated existing resources. Budgets notify after cost data arrives; they do not automatically stop services or guarantee a $5 maximum. Alert delivery must be verified in the deployed budget settings; no claim that an email has been sent is made.
+Budgets use the Azure subscription billing currency. Resource-group alerts email peter.yousefi@outlook.com at 20%, 60% and 100% of a monthly 5-unit budget and at a forecast 100%. A separate subscription-wide actual/forecast 5-unit alert also includes unrelated existing resources. Budgets notify after cost data arrives; they do not automatically stop services or guarantee a $5 maximum. Subscription budget configuration has been verified by Azure CLI; resource-group budget settings remain pending deployment. no claim that an email has been sent is made.
 
 ## Prepared deployment
 
