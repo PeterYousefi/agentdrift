@@ -40,9 +40,13 @@ export function AnalysisControls({
     <div className="mb-4 space-y-2 rounded-sm border border-border bg-muted p-3">
       <p className="text-[12px]">{evidenceCount} stored evidence events available for analysis.</p>
       <p className="text-[11px] text-muted-foreground">
-        {status.data?.configured
-          ? "Azure OpenAI configured; availability is checked when you generate analysis."
-          : "Azure OpenAI is unconfigured; the deterministic evidence summary remains available."}
+        {status.error
+          ? "Model configuration status could not be checked."
+          : status.isPending
+            ? "Checking model configuration…"
+            : status.data?.configured
+              ? "Azure OpenAI configured; availability is checked when you generate analysis."
+              : "Azure OpenAI is unconfigured; the deterministic evidence summary remains available."}
       </p>
       <Button
         onClick={() => generate.mutate()}
