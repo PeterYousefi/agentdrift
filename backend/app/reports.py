@@ -12,10 +12,15 @@ logger = logging.getLogger(__name__)
 def validate_report(report, case_id, evidence):
     allowed = {e.event_id for e in evidence}
     citations = set(report.evidence_citations)
-    for claim in report.observed_facts + report.detector_findings + report.hypotheses:
-        citations.update(claim.evidence_ids)
-        if claim.category not in {"OBSERVED", "DETECTED", "INFERRED", "RECOMMENDED"}:
-            raise ValueError("unknown claim category")
+    for claims, category in [
+        (report.observed_facts, "OBSERVED"),
+        (report.detector_findings, "DETECTED"),
+        (report.hypotheses, "INFERRED"),
+    ]:
+        for claim in claims:
+            citations.update(claim.evidence_ids)
+            if claim.category != category:
+                raise ValueError("claim category does not match report section")
     if report.case_id != case_id or not citations <= allowed:
         raise ValueError("invalid case or evidence citation")
     if not report.observed_facts or any(not c.evidence_ids for c in report.observed_facts):
