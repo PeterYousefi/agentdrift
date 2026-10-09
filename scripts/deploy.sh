@@ -27,5 +27,5 @@ SWA_CLI_DEPLOYMENT_TOKEN="$swa_token" npx --yes @azure/static-web-apps-cli deplo
 unset swa_token
 curl --fail --retry 12 --retry-delay 10 "https://$api_host/health"
 curl --fail --retry 12 --retry-delay 10 "https://$api_host/ready"
-E2E_BASE_URL="https://$web_host" (cd lovable && npx playwright test)
+(cd lovable && E2E_BASE_URL="https://$web_host" npx playwright test)
 printf '\nFrontend: https://%s\nAPI: https://%s/health\n' "$web_host" "$api_host"
