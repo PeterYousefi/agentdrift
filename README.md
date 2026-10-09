@@ -14,6 +14,23 @@ The existing Lovable UI is preserved: React 19, TanStack Start/Router/Query, Rea
 
 **Live demo:** [AgentDrift personal demo](https://agentdrift-personal-demo.azurewebsites.net) · [API health](https://agentdrift-api.icydune-d7187e3c.canadacentral.azurecontainerapps.io/health). The public Chromium workflow passed, including deep-link refresh and zero page errors. [Repository](https://github.com/PeterYousefi/agentdrift) · [Architecture](docs/architecture.md) · [Deployment and preflight price detail](docs/azure-deployment.md).
 
+## Architecture
+
+```mermaid
+flowchart LR
+  UI[Existing Lovable React UI on F1 App Service] --> API[FastAPI on Container Apps]
+  API --> Replay[Synthetic metadata replay]
+  Replay --> Detector[Statistical features and correlated sequence rules]
+  Detector --> Evidence[Cases and event-derived graphs]
+  Evidence --> Tables[Azure Table Storage via managed identity]
+  Evidence --> Reports[Typed evidence bundle and validated report]
+  Reports --> Fallback[Hosted deterministic fallback]
+  Reports -. explicitly enabled in future .-> Model[Azure OpenAI server SDK]
+  UI --> Approval[Human-approved simulated containment and audit]
+```
+
+A single worker/replica serializes mutations and persistent attempt quotas. Local storage is SQLite; cloud storage is Azure Tables. Sequence correlation uses a bounded 900-second horizon independently of 300-second volume windows. Trusted ordinary export allowances change alert policy while preserving raw volume deviations. These rules are transparent policy, not a trained ML classifier.
+
 ## Local demo
 
 Python 3.12+ and Node 24:
@@ -40,9 +57,18 @@ Container: `docker build -t agentdrift backend`. Production configuration requir
 
 ## Executed verification
 
-68 pytest tests pass, with one opt-in live-model test skipped; 21 frontend Vitest tests and four Chromium/API end-to-end workflows pass locally. Frontend build, TypeScript and lint pass; lint retains seven existing fast-refresh warnings. GitHub validation ran backend, Docker, frontend and browser jobs successfully. The image is available from public GHCR; Azure deployment workflow remains gated.
+73 pytest tests pass, with one opt-in live-model test skipped; 21 frontend Vitest tests and four Chromium/API end-to-end workflows pass locally. Frontend build, TypeScript and lint pass; lint retains seven existing fast-refresh warnings. GitHub validation ran backend, Docker, frontend and browser jobs successfully. The image is available from public GHCR; Azure deployment workflow remains gated.
 
-The frozen **260-run challenge** measures precision 0.50, recall 0.80, F1 0.6154 and false-positive rate 0.50 (80 TP, 80 FP, 80 TN, 20 FN). Detection Lab shows these weaker results by default, with trivial baselines and threshold sensitivity. The tuned core regression has 120 executed synthetic runs: precision 1.00, recall 1.00, F1 1.00, false-positive rate 0.00 (80 TP, 0 FP, 40 TN, 0 FN) after explicit approved-endpoint policy; reproduced prior FPR was 0.50. [Machine-readable results](backend/evaluation.json) and [evaluation methodology](docs/evaluation.md) explain the limits. Synthetic metrics do not establish effectiveness on real agent telemetry.
+Rules-1.2 uses a separate development set and was committed before fresh evaluation. Detection Lab defaults to the **combined 380-run held-out set**, including ambiguity probes, rather than advertising only the perfect narrower result.
+
+| Investigation task | Rules-1.1 precision / recall / FPR | Rules-1.2 precision / recall / FPR |
+|---|---|---|
+| Existing 260-run regression | 50% / 80% / 50% | 100% / 100% / 0% |
+| Fresh 260-run challenge | 50% / 80% / 50% | 100% / 100% / 0% |
+| Fresh 120 ambiguity probes | 33.3% / 25% / 100% | 0% / 0% / 100% |
+| **Combined 380 fresh runs** | **45.5% / 55.6% / 60%** | **71.4% / 55.6% / 20%** |
+
+The combined confusion matrix is TP100 FP40 TN160 FN80; F1 is 0.625. Fewer legitimate-volume/cold-start alerts and more split-window detections come with missed solitary suspicious transfers to trusted endpoints. The original tuned 120-run regression remains 80 TP, 0 FP, 40 TN, 0 FN. These are synthetic review labels, not maliciousness classifications. [Machine-readable results](backend/evaluation.json), [methodology](docs/evaluation.md) and [launch protocol](docs/launch-pass.md) preserve the weaker outcomes and distribution limits. No post-held-out detector tuning was performed.
 
 Scenarios: normal research, volume spike, novel endpoint, sensitive read → stage → send, low-and-slow drift and benign unusual reporting. The same run has stable event IDs; fresh replay runs isolate evidence and policy state. See the [three-minute script](docs/demo-script.md).
 

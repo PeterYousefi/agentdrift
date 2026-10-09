@@ -9,3 +9,7 @@ Rules-1.1 combines bounded contributions from robust volume deviation, novelty, 
 Sequence members must share agent, correlation and run, and be temporally ordered within 300 seconds. Input is sorted and deduplicated. An unusual reporting destination remains statistically novel, but explicit server-side approval suppresses its novelty contribution. Other anomaly contributions remain active, including restricted sequences to approved destinations. Novelty does not prove maliciousness. Identity checks use the synthetic identity naming convention and need integration-specific attribution for real telemetry.
 
 Cumulative deviation assumes a training cycle per ten minutes. This is a documented simulator-specific assumption. No machine-learning model is implemented: the narrow repeated scenario shapes do not justify a credible claim of ML improvement. Production readiness would require representative telemetry, approval context, calibration, distributed correlation and drift handling.
+
+## Launch policy (rules-1.2)
+
+Volume windows remain300seconds; sequence horizon is900seconds with strict READ→WRITE→CONNECT→SEND ordering and actor/run/correlation agreement. Learning baselines cannot generate volume-only verdicts. Explicit trusted endpoint allowances qualify ordinary solitary exports while retaining measured raw deviation. Burst, unapproved novelty, restricted and cumulative detection remain active. See evaluation.md for held-out results and missed trusted transfers; policy does not determine malicious intent.
