@@ -38,9 +38,9 @@ Container: `docker build -t agentdrift backend`. Production configuration requir
 
 ## Executed verification
 
-30 pytest tests, 14 frontend Vitest tests and one Chromium end-to-end workflow pass. Frontend build, TypeScript and lint pass; lint retains seven existing fast-refresh warnings. GitHub validation ran backend, Docker, frontend and browser jobs successfully. The image is available from public GHCR; Azure deployment workflow remains gated.
+39 pytest tests, 18 frontend Vitest tests and three Chromium/API end-to-end workflows pass locally. Frontend build, TypeScript and lint pass; lint retains seven existing fast-refresh warnings. GitHub validation ran backend, Docker, frontend and browser jobs successfully. The image is available from public GHCR; Azure deployment workflow remains gated.
 
-120 executed held-out synthetic runs: precision 0.80, recall 1.00, F1 0.8889, false-positive rate 0.50 (80 TP, 20 FP, 20 TN, 0 FN). [Machine-readable results](backend/evaluation.json) and [evaluation methodology](docs/evaluation.md) explain the limits. Synthetic metrics do not establish effectiveness on real agent telemetry.
+120 executed held-out synthetic runs: precision 1.00, recall 1.00, F1 1.00, false-positive rate 0.00 (80 TP, 0 FP, 40 TN, 0 FN) after explicit approved-endpoint policy; reproduced prior FPR was 0.50. [Machine-readable results](backend/evaluation.json) and [evaluation methodology](docs/evaluation.md) explain the limits. Synthetic metrics do not establish effectiveness on real agent telemetry.
 
 Scenarios: normal research, volume spike, novel endpoint, sensitive read → stage → send, low-and-slow drift and benign unusual reporting. The same run has stable event IDs; fresh replay runs isolate evidence and policy state. See the [three-minute script](docs/demo-script.md).
 

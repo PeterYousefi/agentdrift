@@ -8,4 +8,4 @@
 
 2:00–2:30: Open Containment. Enter an analyst note and click Approve simulated containment. The backend validates a human-requested transition, changes this run's synthetic policy and records approval and simulated execution. Refresh, then open Response to show persisted audit.
 
-2:30–3:00: Open Detection Lab. Show the measured confusion matrix and 50% false-positive rate on the deliberately ambiguous benign scenario. State that this is a synthetic work sample, not a validated enterprise detector. Normal playback should create no serious finding. Show architecture and repository history if time permits.
+2:30–3:00: Open Detection Lab. Show the measured confusion matrix and reproduced 50% false-positive rate and measured reduction to 0% after explicit reporting-endpoint approval. State that this is a synthetic work sample, not a validated enterprise detector. Normal playback should create no serious finding. Show architecture and repository history if time permits.

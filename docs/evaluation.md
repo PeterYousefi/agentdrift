@@ -1,20 +1,19 @@
-# Executed evaluation
+# Reproduced detection evaluation
 
-Run `make evaluate` or `backend/.venv/bin/python -m app.evaluation`. Machine-readable results are in backend/evaluation.json and GET /api/v1/detection/evaluation; the live Detection Lab reads this artifact.
+Run `make evaluate` (or `cd backend && .venv/bin/python -m app.evaluation`). The checked-in backend/evaluation.json is served to Detection Lab; displayed metrics are executed results. Rules-1.0 was reproduced before changes: 120 runs, TP 80, FP 20, TN 20, FN 0. All 20 false positives were benign-unusual reporting runs.
 
-120 runs: six scenario structures × held-out seeds 100–119. Training uses seed 7. Ground truth is confined to the evaluation catalog and not present in detector event inputs. Independent normal-agent background traffic is added and checked for score invariance.
+Rules-1.1 uses explicit server-side approval policy for the research agent's reporting endpoint. Statistical novelty remains a feature; only unapproved novelty contributes to alert score. Large volume, restricted sequences, cumulative deviation and attribution checks remain active regardless of approval. Ground-truth labels and untrusted event metadata cannot grant approval. The policy is demo configuration, not approval inferred from labels.
 
-| Metric | Executed result |
-|---|---:|
-| True positives | 80 |
-| False positives | 20 |
-| True negatives | 20 |
-| False negatives | 0 |
-| Precision | 0.80 |
-| Recall | 1.00 |
-| F1 | 0.8889 |
-| False-positive rate | 0.50 |
-| Mean positive-case detection latency | 169 simulated seconds |
-| Mean detector compute | about 0.040 ms on the local evaluation machine |
+| Metric | Before | After |
+|---|---:|---:|
+| Runs | 120 | 120 |
+| TP / FP / TN / FN | 80 / 20 / 20 / 0 | 80 / 0 / 40 / 0 |
+| Precision | 0.80 | 1.00 |
+| Recall | 1.00 | 1.00 |
+| F1 | 0.8889 | 1.00 |
+| False-positive rate | 0.50 | 0.00 |
+| Mean positive detection latency | 169 simulated seconds | 169 simulated seconds |
 
-All 20 benign unusual endpoint runs trigger review: realistic ambiguity produces substantial false-positive pressure. “Positive” here means expected review signal, not proven exfiltration. Scenario structures repeat across seeds, so results cannot establish real-world effectiveness. Dataset overlap and simulator assumptions limit generalization. No ML comparison is claimed. Transport event-to-alert latency has not been measured on Azure. Pipeline_processing_ms measures local ingestion, persistence and detector duration, not end-to-end browser delay.
+Six repeated scenario shapes × seeds 100–119; baseline seed 7, 40 active send windows. Independent normal-agent background traffic is checked for score invariance. Mean computation is machine-dependent and stored in the artifact; transport latency is not measured. The endpoint policy was selected after investigating this benchmark: these are regression results, not an untouched external validation set. Perfect synthetic results do not establish real-world accuracy. Positive labels mean expected review signals, not confirmed maliciousness. An unfamiliar unapproved endpoint remains reviewable even at normal volume.
+
+Regression coverage includes approved benign novelty, approved destination with an extreme transfer, an approved destination carrying a restricted staged sequence, forged approval metadata, duplicate/out-of-order events and multi-agent isolation. No ML superiority is claimed.

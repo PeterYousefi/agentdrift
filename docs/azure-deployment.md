@@ -44,4 +44,8 @@ User approved the low-cost plan and requested a readable personal-demo URL. The 
 
 References: [App Service default hostname formats](https://learn.microsoft.com/en-us/azure/app-service/reference-dangling-subdomain-prevention), [Free shared App Service tiers](https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
 
-Restart verification: an explicit revision restart request returned Azure InternalServerError. This attempt does not establish restart durability; durable Table Storage is confirmed by /ready and persisted evidence retrieval.
+Persistence verification: the earlier explicit restart request returned Azure InternalServerError and did not establish durability. During the audited release, the backend image changed from bc36ccc to f7c4a06; the previously saved session and all four evidence IDs were retrieved unchanged after rollout. The release update and readiness succeeded.
+
+## Updating existing resources
+
+For validated releases use `ALLOW_AZURE_DEPLOY=true UPDATE_EXISTING_ONLY=true AGENTDRIFT_IMAGE=ghcr.io/peteryousefi/agentdrift:<tested-image-commit-sha> bash scripts/deploy.sh`. This path verifies both apps exist, updates the backend image, builds and ZIP-deploys the frontend, checks health/readiness and runs public Playwright tests. It does not provision or resize resources. The manual GitHub OIDC workflow requires an explicit immutable image tag and remains gated until OIDC variables are configured. Validation and GHCR image publishing are active.
