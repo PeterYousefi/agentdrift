@@ -23,6 +23,7 @@ import {
 import { GraphLegend, MovementGraph } from "@/components/movement-graph/MovementGraph";
 import { EventTimeline } from "@/components/investigation/EventTimeline";
 import { AnomalyScore, FeatureBreakdown } from "@/components/investigation/DetectorReadout";
+import { AnalysisControls } from "@/components/investigation/AnalysisControls";
 import { NarrativeNotebook } from "@/components/investigation/NarrativeNotebook";
 import { ContainmentCard } from "@/components/investigation/ContainmentCard";
 import { EventDetail } from "@/components/evidence/EventDetail";
@@ -492,6 +493,13 @@ function Workspace() {
               {tab === "report" &&
                 (narrative.length ? (
                   <div className="space-y-8">
+                    {!isDemoMode && (
+                      <AnalysisControls
+                        key={caseId}
+                        caseId={caseId}
+                        evidenceCount={events.length}
+                      />
+                    )}
                     {narrative.map((n) => (
                       <NarrativeNotebook
                         key={n.id}

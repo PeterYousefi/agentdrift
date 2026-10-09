@@ -11,6 +11,23 @@ test("persisted scenario evidence report and human-approved simulation", async (
   await page.getByRole("link", { name: "Open investigation →" }).click();
   await page.getByRole("tab", { name: "AI report", exact: true }).click();
   await expect(page.getByText("Deterministic summary · no LLM")).toBeVisible();
+  const generated = page.waitForResponse(
+    (response) => response.url().endsWith("/report") && response.request().method() === "POST",
+  );
+  await page.getByRole("button", { name: "Generate AI Analysis" }).click();
+  const analysis = await (await generated).json();
+  expect(["deterministic", "azure-openai"]).toContain(analysis.generated_by);
+  expect(analysis.evidence_fingerprint).toMatch(/^[0-9a-f]{64}$/);
+  if (process.env.EXPECT_LIVE_MODEL === "true") expect(analysis.generated_by).toBe("azure-openai");
+  await page
+    .getByRole("button", { name: /Open cited evidence evt-/ })
+    .first()
+    .click();
+  await expect(page.getByRole("tab", { name: "Evidence", exact: true })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await page.getByRole("tab", { name: "AI report", exact: true }).click();
   await expect(page.locator(".react-flow__node").first()).toBeVisible();
   if (process.env.CAPTURE_DEMO === "true")
     await page.screenshot({ path: "../docs/assets/investigation.png", fullPage: true });

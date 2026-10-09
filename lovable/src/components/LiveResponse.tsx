@@ -5,6 +5,7 @@ import { liveRequest, q } from "@/api";
 import type { ContainmentAction } from "@/types";
 import { Mono, PageHeader, Panel, SyntheticBadge } from "@/components/design-system/primitives";
 import { ContainmentCard } from "@/components/investigation/ContainmentCard";
+import { AnalysisControls } from "@/components/investigation/AnalysisControls";
 import { NarrativeNotebook } from "@/components/investigation/NarrativeNotebook";
 import { EventDetail } from "@/components/evidence/EventDetail";
 
@@ -91,6 +92,13 @@ export function LiveInvestigator() {
           ))}
         </nav>
         <Panel eyebrow="Grounded report" title="What does the evidence support?">
+          {caseId && (
+            <AnalysisControls
+              key={caseId}
+              caseId={caseId}
+              evidenceCount={evidence.data?.length ?? 0}
+            />
+          )}
           {report.data?.map((entry) => (
             <NarrativeNotebook key={entry.id} entry={entry} onCite={setCite} activeId={cite} />
           ))}

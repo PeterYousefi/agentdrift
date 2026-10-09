@@ -172,6 +172,19 @@ export interface NarrativeClaim {
 }
 
 export interface NarrativeEntry {
+  detectorFindings?: NarrativeClaim[];
+  alternativeExplanations?: string[];
+  provenance?: {
+    provider: string;
+    provider_model: string | null;
+    created_at: string;
+    evidence_fingerprint: string;
+    prompt_version: string;
+    validation_status: string;
+    fallback_reason: string | null;
+    request_correlation_id: string;
+    generation_ms: number;
+  };
   generatedBy?: "deterministic" | "azure-openai";
   modelDeployment?: string | null;
   id: string;
