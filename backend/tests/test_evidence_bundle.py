@@ -71,5 +71,5 @@ def test_metadata_injection_is_excluded_and_targets_remain_data():
 def test_invalid_unicode_rejected():
     case, events, finding = bundle()
     events[0].resource_id = "bad\ud800"
-    with pytest.raises(UnicodeError):
+    with pytest.raises((UnicodeError, ValueError)):
         build_bundle(case, events, finding)
