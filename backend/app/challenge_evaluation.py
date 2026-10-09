@@ -3,7 +3,7 @@
 from datetime import timedelta
 from random import Random
 
-from app.detection import build_baseline, detect, ordered
+from app.detection import VERSION, build_baseline, detect, ordered
 from app.scenarios import AGENT, MB, MODEL, RESOURCE, generate, historical_events, make_event
 
 # Targets: statistical anomaly, investigation-worthy activity, high-severity investigation.
@@ -105,15 +105,23 @@ def metrics(rows, prediction, target):
     }
 
 
-def evaluate_challenges(seeds=range(200, 220)):
+def evaluate_challenges(
+    seeds=range(200, 220),
+    *,
+    detector=detect,
+    targets=TARGETS,
+    generator=challenge,
+    dataset="Existing 13 challenge structures; regression seeds 200–219",
+):
+    seeds = tuple(seeds)
     rows = []
     for seed in seeds:
-        for scenario, targets in TARGETS.items():
-            events, baseline = challenge(scenario, seed)
-            finding = detect(events, baseline)
+        for scenario, labels in targets.items():
+            events, baseline = generator(scenario, seed)
+            finding = detector(events, baseline)
             first = None
             for i in range(1, len(events) + 1):
-                candidate = detect(events[:i], baseline)
+                candidate = detector(events[:i], baseline)
                 if candidate and candidate.anomaly_score >= 30:
                     visible = [e for e in events[:i] if e.agent_id == AGENT]
                     first = (
@@ -125,9 +133,9 @@ def evaluate_challenges(seeds=range(200, 220)):
                 {
                     "scenario": scenario,
                     "seed": seed,
-                    "anomalyTarget": targets[0],
-                    "investigationTarget": targets[1],
-                    "highSeverityTarget": targets[2],
+                    "anomalyTarget": labels[0],
+                    "investigationTarget": labels[1],
+                    "highSeverityTarget": labels[2],
                     "score": finding.anomaly_score,
                     "severity": finding.severity,
                     "review": finding.anomaly_score >= 30,
@@ -141,6 +149,10 @@ def evaluate_challenges(seeds=range(200, 220)):
                     ),
                 }
             )
+    return summarize(rows, seeds, targets, dataset, VERSION if detector is detect else "rules-1.1")
+
+
+def summarize(rows, seeds, targets, dataset, version):
     review = metrics(rows, "review", "investigationTarget")
     benign = [r for r in rows if not r["investigationTarget"]]
     positive_delays = [
@@ -149,7 +161,9 @@ def evaluate_challenges(seeds=range(200, 220)):
         if r["investigationTarget"] and r["detectionDelaySeconds"] is not None
     ]
     return {
-        "dataset": "13 frozen challenge structures × seeds 200–219; baseline seed 7; no detector retuning",
+        "dataset": dataset,
+        "seeds": list(seeds),
+        "detector": version,
         "task": "Investigation-worthy synthetic behavior, not maliciousness classification",
         "runs": len(rows),
         "investigation": review,
@@ -179,17 +193,17 @@ def evaluate_challenges(seeds=range(200, 220)):
             scenario: {
                 "runs": sum(r["scenario"] == scenario for r in rows),
                 "alerts": sum(r["scenario"] == scenario and r["review"] for r in rows),
-                "investigationTarget": targets[1],
-                "highSeverityTarget": targets[2],
+                "investigationTarget": labels[1],
+                "highSeverityTarget": labels[2],
             }
-            for scenario, targets in TARGETS.items()
+            for scenario, labels in targets.items()
         },
         "limitations": [
             "Not real telemetry; task labels are evaluation policy, not proof of maliciousness.",
-            "Only 13 synthetic structures; frozen detector evaluated without tuning to this set.",
+            "Repeated synthetic structures; disjoint seeds do not establish distributional independence.",
             "Synthetic activity hours exclude idle time and wall-clock ingestion; not operational alert rates.",
             "Statistical anomaly targets are distinct annotations, not inferred maliciousness.",
-            "Static baselines and 300-second sequence windows are exposed as weaknesses.",
+            "Static baselines, trusted export ambiguity and bounded sequence horizons remain limitations.",
         ],
         "results": rows,
     }

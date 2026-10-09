@@ -51,3 +51,23 @@ def test_preregistered_stress_generators_are_reproducible_metadata_only():
         events, _ = stress(name, 5000)
         assert events == stress(name, 5000)[0]
         assert all(not {"label", "malicious", "ground_truth"} & e.metadata.keys() for e in events)
+
+
+def test_frozen_reference_comparison_and_combined_tradeoffs():
+    from app.challenge_evaluation import summarize
+    from app.launch_stress import STRESS_TARGETS, stress
+    from app.reference_detection import detect as old_detect
+
+    seeds = range(700, 702)
+    current = evaluate_challenges(seeds)
+    old = evaluate_challenges(seeds, detector=old_detect)
+    probes = evaluate_challenges(seeds, targets=STRESS_TARGETS, generator=stress)
+    assert old["investigation"]["confusionMatrix"] == {"tp": 8, "fp": 8, "tn": 8, "fn": 2}
+    assert current["investigation"]["confusionMatrix"] == {"tp": 10, "fp": 0, "tn": 16, "fn": 0}
+    assert probes["investigation"]["confusionMatrix"] == {"tp": 0, "fp": 4, "tn": 0, "fn": 8}
+    combined = summarize(
+        current["results"] + probes["results"], seeds, TARGETS | STRESS_TARGETS, "test combined", "rules-1.2"
+    )
+    assert combined["runs"] == 38
+    assert combined["investigation"]["confusionMatrix"] == {"tp": 10, "fp": 4, "tn": 16, "fn": 8}
+    assert combined["investigation"]["recall"] < 0.6

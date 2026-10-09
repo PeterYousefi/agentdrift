@@ -4,8 +4,10 @@ import json
 import time
 from pathlib import Path
 
-from app.challenge_evaluation import evaluate_challenges
+from app.challenge_evaluation import TARGETS, evaluate_challenges, summarize
 from app.detection import VERSION, build_baseline, detect
+from app.launch_stress import STRESS_TARGETS, stress
+from app.reference_detection import detect as reference_detect
 from app.scenarios import CATALOG, generate, historical_events
 
 
@@ -82,9 +84,57 @@ def evaluate(seeds=range(100, 120)):
     }
 
 
+def launch_evaluation():
+    def summary(result):
+        return {k: v for k, v in result.items() if k != "results"}
+
+    heldout = dict(seeds=range(700, 720), dataset="Fresh held-out seeds 700–719; frozen at c3a2da9")
+    probes = dict(
+        heldout,
+        targets=STRESS_TARGETS,
+        generator=stress,
+        dataset="Six pre-registered ambiguity probes × fresh seeds 700–719",
+    )
+    current = evaluate_challenges(**heldout)
+    current_stress = evaluate_challenges(**probes)
+    previous = evaluate_challenges(**heldout, detector=reference_detect)
+    previous_stress = evaluate_challenges(**probes, detector=reference_detect)
+    combined_targets = TARGETS | STRESS_TARGETS
+    combined_dataset = (
+        "19 pre-registered structures × held-out seeds 700–719; challenge plus ambiguity probes"
+    )
+    return {
+        "frozenCommit": "c3a2da9",
+        "developmentSeeds": list(range(1000, 1020)),
+        "regressionBefore": summary(evaluate_challenges(detector=reference_detect)),
+        "heldOut": current,
+        "heldOutBefore": summary(previous),
+        "stress": current_stress,
+        "stressBefore": summary(previous_stress),
+        "combined": summarize(
+            current["results"] + current_stress["results"],
+            range(700, 720),
+            combined_targets,
+            combined_dataset,
+            VERSION,
+        ),
+        "combinedBefore": summary(
+            summarize(
+                previous["results"] + previous_stress["results"],
+                range(700, 720),
+                combined_targets,
+                combined_dataset,
+                "rules-1.1",
+            )
+        ),
+        "protocol": "Development seeds 1000–1019; old 200–219 regression; 700–719 evaluated after frozen commit. No post-evaluation tuning.",
+    }
+
+
 if __name__ == "__main__":
     result = evaluate()
     result["expandedEvaluation"] = evaluate_challenges()
+    result["launchEvaluation"] = launch_evaluation()
     path = Path(__file__).parent.parent / "evaluation.json"
     path.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({k: v for k, v in result.items() if k != "results"}, indent=2))
