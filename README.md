@@ -1,5 +1,7 @@
 # AgentDrift
 
+**Live Azure demo: [agentdrift-personal-demo.azurewebsites.net](https://agentdrift-personal-demo.azurewebsites.net/)**
+
 **Every permission was valid. The sequence wasn't.**
 
 AI-agent metadata movement investigation with Python behavioral detection, linked evidence graphs and human-approved simulated response. Independent synthetic-data work sample; no Hilt endorsement.
