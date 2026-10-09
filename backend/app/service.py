@@ -83,7 +83,7 @@ class Service:
                     "agentId": finding.agent_id,
                     "status": previous["status"] if previous else "open",
                     "severity": finding.severity,
-                    "openedAt": previous["openedAt"] if previous else finding.window_end.isoformat(),
+                    "openedAt": previous["openedAt"] if previous else utcnow().isoformat(),
                     "score": finding.anomaly_score / 100,
                     "summary": "Computed anomaly requiring human review; intent is unproven.",
                     "evidenceIds": finding.evidence_event_ids,
