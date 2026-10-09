@@ -4,6 +4,8 @@ import { Metric, PageHeader, Panel, SyntheticBadge } from "@/components/design-s
 
 type Evaluation = {
   runs: number;
+  detector: string;
+  dataset: string;
   precision: number;
   recall: number;
   f1: number;
@@ -77,6 +79,9 @@ export function LiveDetection() {
             </Panel>
           </div>
           <Panel className="mt-6" eyebrow="Measured limits" title="Interpretation">
+            <p className="mb-2 text-sm">
+              {result.data.detector} · {result.data.dataset}
+            </p>
             <p className="text-sm">
               Detector computation: {result.data.meanProcessingMs.toFixed(3)} ms mean on the
               evaluation machine.

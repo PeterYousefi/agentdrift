@@ -76,12 +76,12 @@ function About() {
             adapter · no secrets
           </div>
           <div className="rounded-sm border border-border p-3">
-            <div className="eyebrow">Backend</div>Python FastAPI · Azure deployment pending · owns
-            all credentials
+            <div className="eyebrow">Backend</div>Python FastAPI · Azure Container Apps · owns all
+            credentials
           </div>
           <div className="rounded-sm border border-border p-3">
             <div className="eyebrow">Analysis</div>Detector in backend · Azure OpenAI called
-            server-side only
+            server-side when configured; labeled fallback otherwise
           </div>
         </div>
       </Panel>
@@ -125,13 +125,17 @@ function About() {
           <div className="flex justify-between border-b border-border pb-2">
             <dt className="text-muted-foreground">GitHub repository</dt>
             <dd>
-              <Mono className="text-muted-foreground">to be added</Mono>
+              <a href="https://github.com/PeterYousefi/agentdrift" className="underline">
+                AgentDrift source
+              </a>
             </dd>
           </div>
           <div className="flex justify-between border-b border-border pb-2">
             <dt className="text-muted-foreground">Azure demo deployment</dt>
             <dd>
-              <Mono className="text-muted-foreground">not yet deployed</Mono>
+              <a href="https://agentdrift-personal-demo.azurewebsites.net" className="underline">
+                Personal demo on Azure
+              </a>
             </dd>
           </div>
           <div className="flex justify-between border-b border-border pb-2">
