@@ -3,15 +3,16 @@
 Only checked items have been executed and verified. Each increment is committed separately.
 
 - [x] Inspect existing Lovable source and tools
-- [ ] Commit and push original frontend baseline
-- [ ] Audit frontend; install, build, lint and test
-- [ ] Typed Python service and health checks
-- [ ] Deterministic scenarios and ingestion
-- [ ] Baselines, feature extraction, sequence detection and evaluation
-- [ ] Durable evidence, session isolation, cases and graphs
-- [ ] Grounded reports and Azure OpenAI integration
-- [ ] Human-approved simulated containment and audit
-- [ ] Integrate existing Lovable pages and live playback
+- [x] Commit and push original frontend baseline
+- [x] Audit frontend; install, build, lint and test
+- [x] Typed Python service and health checks
+- [x] Deterministic scenarios and ingestion
+- [x] Baselines, feature extraction, sequence detection and evaluation
+- [x] Local durable evidence, session isolation, cases and graphs; Azure adapter prepared
+- [x] Grounded reports and Azure OpenAI adapter with tested deterministic fallback
+- [x] Human-approved simulated containment and audit
+- [x] Integrate existing Lovable pages and live playback
 - [ ] Azure cost review, Bicep and deployment
-- [ ] CI, browser tests and live verification
-- [ ] Documentation, measurements and demo walkthrough
+- [x] GitHub CI and local browser tests
+- [ ] Azure deployment and public live verification
+- [x] Documentation, executed synthetic measurements and demo walkthrough

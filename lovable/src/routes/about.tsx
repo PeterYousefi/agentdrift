@@ -27,7 +27,7 @@ const ARCH = [
   },
   { k: "Detect", v: "Behavioral detector", s: "per-agent baselines · sliding windows" },
   { k: "Reconstruct", v: "Evidence graph", s: "event IDs → movement graph" },
-  { k: "Explain", v: "Grounded narrative", s: "Azure OpenAI, server-side, cites evidence" },
+  { k: "Explain", v: "Grounded narrative", s: "Validated reports · deterministic fallback" },
   { k: "Respond", v: "Human approval", s: "simulated containment · audit trail" },
 ];
 
@@ -51,7 +51,7 @@ function About() {
         </p>
       </section>
 
-      <Panel eyebrow="Architecture" title="Pipeline (proposed)">
+      <Panel eyebrow="Architecture" title="Implemented pipeline">
         <ol className="grid gap-2 md:grid-cols-5">
           {ARCH.map((a, i) => (
             <li key={a.k} className="relative rounded-sm border border-border bg-muted/50 p-3">
@@ -76,11 +76,11 @@ function About() {
             adapter · no secrets
           </div>
           <div className="rounded-sm border border-border p-3">
-            <div className="eyebrow">Backend (planned)</div>Python FastAPI on Azure · owns all
-            credentials
+            <div className="eyebrow">Backend</div>Python FastAPI · Azure deployment pending · owns
+            all credentials
           </div>
           <div className="rounded-sm border border-border p-3">
-            <div className="eyebrow">Models (planned)</div>Detector in backend · Azure OpenAI called
+            <div className="eyebrow">Analysis</div>Detector in backend · Azure OpenAI called
             server-side only
           </div>
         </div>
@@ -108,8 +108,8 @@ function About() {
         </Panel>
         <Panel eyebrow="Response" title="Human-approved, simulated">
           <p className="text-[13px] leading-relaxed">
-            Approvals change local state and the session audit trail. No cloud quarantine, network
-            policy or credential access is implemented.
+            Approvals change isolated synthetic state and the persisted session audit trail. No
+            cloud quarantine, network policy or credential access is implemented.
           </p>
         </Panel>
       </div>
@@ -137,7 +137,7 @@ function About() {
           <div className="flex justify-between border-b border-border pb-2">
             <dt className="text-muted-foreground">Measured evaluation results</dt>
             <dd>
-              <Mono className="text-muted-foreground">not yet measured</Mono>
+              <Mono className="text-muted-foreground">120 synthetic runs · see Detection Lab</Mono>
             </dd>
           </div>
         </dl>
