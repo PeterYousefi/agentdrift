@@ -151,6 +151,16 @@ class InvestigationReport(DomainModel):
     generated_by: str
     model_deployment: str | None = None
     created_at: datetime = Field(default_factory=utcnow)
+    provider: str = "deterministic"
+    provider_model: str | None = None
+    evidence_fingerprint: str = ""
+    prompt_version: str = "investigator-2.0"
+    validation_status: str = "canonical-facts"
+    fallback_reason: str | None = None
+    request_correlation_id: str = ""
+    alternative_explanations: list[str] = Field(default_factory=list)
+    generation_ms: float = 0
+    token_usage: dict[str, int] = Field(default_factory=dict)
 
 
 class ContainmentAction(DomainModel):

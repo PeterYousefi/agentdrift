@@ -53,7 +53,16 @@ def test_structured_model_output_and_citations(monkeypatch):
 
     monkeypatch.setenv("AZURE_OPENAI_DEPLOYMENT", "test-deployment")
     case, events, finding = bundle()
-    payload = fallback(case, events, finding).model_dump_json()
+    from app.evidence_bundle import ModelAnalysis, assertion
+
+    payload = ModelAnalysis(
+        summary="Uncertain sequence",
+        observed_facts=[assertion(e) for e in events],
+        hypotheses=[],
+        alternative_explanations=["Approved export"],
+        limitations=["Synthetic"],
+        recommended_steps=["Verify purpose"],
+    ).model_dump_json()
     client = SimpleNamespace(
         chat=SimpleNamespace(
             completions=SimpleNamespace(
