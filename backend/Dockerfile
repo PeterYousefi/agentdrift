@@ -1,4 +1,5 @@
-FROM python:3.12-slim
+# Docker Official Images mirror avoids anonymous Docker Hub pull rate limits in CI.
+FROM public.ecr.aws/docker/library/python:3.12-slim
 WORKDIR /service
 COPY pyproject.toml ./
 COPY app ./app
